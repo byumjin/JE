@@ -114,10 +114,10 @@ float4 PS(VertexOut pin) : SV_Target
 
 	Metallic = sqrt(Metallic);
 
-	float4 Reflection = ReflectionTexture.SampleLevel(TextureMipSampler, pin.TexCoord, 0) * ( float4(lerp(SpecularColor.rgb, BaseColor.rgb, Metallic), 1.0f)
-						* EnvBRDF.x + EnvBRDF.y) * lerp(energyConservation, energyConservation2, Metallic);
+	float4 Reflection = ReflectionTexture.SampleLevel(TextureMipSampler, pin.TexCoord, 0) * (float4(lerp(SpecularColor.rgb, BaseColor.rgb, Metallic), 1.0f)
+		* EnvBRDF.x + EnvBRDF.y);// *lerp(energyConservation, energyConservation2, Metallic);
 
-	float4 result = (float4(lerp(BaseColor, BaseColor*0.05f, Metallic), 1.0f) + float4(spec, 1.0f))* diffuseFactor + Reflection*lerp(0.0f, 1.0f, Metallic);
+	float4 result = (float4(lerp(BaseColor, BaseColor*0.05f, Metallic), 1.0f) + float4(spec, 1.0f))* diffuseFactor + Reflection*lerp(0.15f, 1.0f, Metallic);
 
 	//float Bias = 100000 / pow(2, 32) + 1.0*0.0001f;
 	

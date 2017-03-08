@@ -112,6 +112,10 @@ POut PS(VertexOut pin)
 
 
 	//rgb is for normal, a is for metallic
+
+
+	//float Metallic = min( NormalMap.Sample(samAnisotropic, pin.TexCoord).a , 0.0f);
+
 	output.Normal = float4((WorldNormal + 1.0f)*0.5f, NormalMap.Sample(samAnisotropic, pin.TexCoord).a);
 	//output.Normal = float4((pin.NormalW + 1.0f)*0.5f, NormalMap.Sample(samAnisotropic, pin.TexCoord).a);
 

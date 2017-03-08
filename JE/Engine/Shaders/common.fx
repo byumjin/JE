@@ -114,8 +114,8 @@ float3 TangentSpaceToWorldSpace(float3 unitNormalW, float3 tangentW, float3 biW,
 
 	float3 NT = localNormal * 2.0f - 1.0f; 
 
-	NT.z = NT.z * 0.5f;
-	NT = normalize(NT);
+	//NT.z = NT.z * 0.5f;
+	//NT = normalize(NT);
 
 	float3 result = mul(NT, TBN);
 	return result;

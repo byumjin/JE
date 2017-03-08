@@ -1169,10 +1169,8 @@ void Renderer::DrawUI()
 				// 0: not intersect 1: intersect 2: include
 				if (Check_IntersectAxisAlignedBoxFrustum((*li)) != 0)
 				{
-					if ((*li)->bSelected == true)
-						mEffects.LineDrawFx->SetAllVariables(XMLoadFloat4x4(&mWVP), 1.0f);
-					else
-						mEffects.LineDrawFx->SetAllVariables(XMLoadFloat4x4(&mWVP), 0.0f);
+				
+						mEffects.LineDrawFx->SetAllVariables(XMLoadFloat4x4(&mWVP), (*li)->bSelected);					
 
 					(*li)->DrawBoundingBox(md3dImmediateContext, activeTech, techDesc3);
 				}
