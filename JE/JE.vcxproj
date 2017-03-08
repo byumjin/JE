@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1D7C9866-F80A-40F7-B94D-23133509F788}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>JE</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.2\include;$(SolutionDir)\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.2\lib\vs2015\x86\debug;$(SolutionDir)\JE\DirectXTex\Libraries\Debug;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;C:\Users\knuck\Documents\Visual Studio 2015\Projects\JE\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\release;C:\Users\knuck\Documents\Visual Studio 2015\Projects\JE\JE\DirectXTex\Libraries\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <DisableSpecificWarnings>4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;libfbxsdk-md.lib;DirectXTex_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;d3dx11.lib;D3DCompiler.lib;Effects11.lib;dxerr.lib;dxgi.lib;dxguid.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Assets\Asset.cpp" />
+    <ClCompile Include="Assets\AssetDatabase.cpp" />
+    <ClCompile Include="Engine\Actor\Actor.cpp" />
+    <ClCompile Include="Engine\Actor\Camera.cpp" />
+    <ClCompile Include="Engine\Actor\DirectionalLightActor.cpp" />
+    <ClCompile Include="Engine\Actor\LightActor.cpp" />
+    <ClCompile Include="Engine\Actor\ReflectionActor.cpp" />
+    <ClCompile Include="Engine\Common\D3DUtil.cpp" />
+    <ClCompile Include="Engine\Common\Effect\d3dxGlobal.cpp" />
+    <ClCompile Include="Engine\Common\Effect\EffectAPI.cpp" />
+    <ClCompile Include="Engine\Common\Effect\EffectLoad.cpp" />
+    <ClCompile Include="Engine\Common\Effect\EffectNonRuntime.cpp" />
+    <ClCompile Include="Engine\Common\Effect\EffectReflection.cpp" />
+    <ClCompile Include="Engine\Common\Effect\EffectRuntime.cpp" />
+    <ClCompile Include="Engine\Common\Effect\Effects.cpp" />
+    <ClCompile Include="Engine\Common\GameTimer.cpp" />
+    <ClCompile Include="Engine\Common\Geometry.cpp" />
+    <ClCompile Include="Engine\Common\GeometryGenerator.cpp" />
+    <ClCompile Include="Engine\Common\ImageLoader.cpp" />
+    <ClCompile Include="Engine\Common\LightHelper.cpp" />
+    <ClCompile Include="Engine\Common\MathHelper.cpp" />
+    <ClCompile Include="Engine\Common\tiny_obj_loader.cc" />
+    <ClCompile Include="Engine\D3DApp.cpp" />
+    <ClCompile Include="Engine\Object\CFbx.cpp" />
+    <ClCompile Include="Engine\Object\Object.cpp" />
+    <ClCompile Include="Engine\Renderer\Bloom.cpp" />
+    <ClCompile Include="Engine\Renderer\CubeMapRender.cpp" />
+    <ClCompile Include="Engine\Renderer\DebugWindow.cpp" />
+    <ClCompile Include="Engine\Renderer\DebugWindows.cpp" />
+    <ClCompile Include="Engine\Renderer\Gizmo.cpp" />
+    <ClCompile Include="Engine\Renderer\LightingRender.cpp" />
+    <ClCompile Include="Engine\Renderer\ObjectsRender.cpp" />
+    <ClCompile Include="Engine\Renderer\Render.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderCapsule.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderStates.cpp" />
+    <ClCompile Include="Engine\Renderer\Scene.cpp" />
+    <ClCompile Include="Engine\Renderer\ShadowRender.cpp" />
+    <ClCompile Include="Engine\Renderer\SkyBox.cpp" />
+    <ClCompile Include="Engine\Shaders\ShaderStructure.cpp" />
+    <ClCompile Include="Engine\Textures\RenderTexture.cpp" />
+    <ClCompile Include="Engine\Textures\Texture.cpp" />
+    <ClCompile Include="WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assets\Asset.h" />
+    <ClInclude Include="Assets\AssetDatabase.h" />
+    <ClInclude Include="Engine\Actor\Actor.h" />
+    <ClInclude Include="Engine\Actor\Camera.h" />
+    <ClInclude Include="Engine\Actor\DirectionalLightActor.h" />
+    <ClInclude Include="Engine\Actor\LightActor.h" />
+    <ClInclude Include="Engine\Actor\ReflectionActor.h" />
+    <ClInclude Include="Engine\Common\D3DUtil.h" />
+    <ClInclude Include="Engine\Common\Effect\d3dx11effect.h" />
+    <ClInclude Include="Engine\Common\Effect\d3dxGlobal.h" />
+    <ClInclude Include="Engine\Common\Effect\Effect.h" />
+    <ClInclude Include="Engine\Common\Effect\EffectBinaryFormat.h" />
+    <ClInclude Include="Engine\Common\Effect\EffectLoad.h" />
+    <ClInclude Include="Engine\Common\Effect\Effects.h" />
+    <ClInclude Include="Engine\Common\Effect\EffectStateBase11.h" />
+    <ClInclude Include="Engine\Common\Effect\EffectStates11.h" />
+    <ClInclude Include="Engine\Common\Effect\IUnknownImp.h" />
+    <ClInclude Include="Engine\Common\Effect\pchfx.h" />
+    <ClInclude Include="Engine\Common\Effect\SOParser.h" />
+    <ClInclude Include="Engine\Common\GameTimer.h" />
+    <ClInclude Include="Engine\Common\Geometry.h" />
+    <ClInclude Include="Engine\Common\GeometryGenerator.h" />
+    <ClInclude Include="Engine\Common\ImageLoader.h" />
+    <ClInclude Include="Engine\Common\LightHelper.h" />
+    <ClInclude Include="Engine\Common\MathHelper.h" />
+    <ClInclude Include="Engine\Common\tiny_obj_loader.h" />
+    <ClInclude Include="Engine\D3DApp.h" />
+    <ClInclude Include="Engine\Object\CFbx.h" />
+    <ClInclude Include="Engine\Object\Object.h" />
+    <ClInclude Include="Engine\Renderer\Bloom.h" />
+    <ClInclude Include="Engine\Renderer\CubeMapRender.h" />
+    <ClInclude Include="Engine\Renderer\DebugWindow.h" />
+    <ClInclude Include="Engine\Renderer\DebugWindows.h" />
+    <ClInclude Include="Engine\Renderer\Gizmo.h" />
+    <ClInclude Include="Engine\Renderer\LightingRender.h" />
+    <ClInclude Include="Engine\Renderer\ObjectsRender.h" />
+    <ClInclude Include="Engine\Renderer\Render.h" />
+    <ClInclude Include="Engine\Renderer\RenderCapsule.h" />
+    <ClInclude Include="Engine\Renderer\RenderStates.h" />
+    <ClInclude Include="Engine\Renderer\Scene.h" />
+    <ClInclude Include="Engine\Renderer\ShadowRender.h" />
+    <ClInclude Include="Engine\Renderer\SkyBox.h" />
+    <ClInclude Include="Engine\Shaders\ShaderStructure.h" />
+    <ClInclude Include="Engine\Textures\RenderTexture.h" />
+    <ClInclude Include="Engine\Textures\Texture.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="JE.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Engine\Shaders\BasicMaterial.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Bloom.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\BoundingBox.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\BRDF.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\common.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\DebugWindow.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Gizmo.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Lighting.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\OutLine.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\ReflectionActor.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Scene.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\ShadowMap.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\SkyBox.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\UISprite.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

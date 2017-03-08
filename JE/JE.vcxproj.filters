@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{fbebdce3-0040-421a-b465-2bc03d6c4a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Actor">
+      <UniqueIdentifier>{e3a2ec01-6454-43e3-9454-2bea5a6c6f58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Common">
+      <UniqueIdentifier>{5cfb3c50-c4f7-4940-8ed5-7edee01f31bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Common\Effect">
+      <UniqueIdentifier>{1f89b1ee-e5e1-4b4c-912c-d78220476281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object">
+      <UniqueIdentifier>{9906ee8e-8fe7-4143-9849-3dc8369408a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Renderer">
+      <UniqueIdentifier>{bdbc16eb-e118-4156-91ea-0c7bbed71d41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Shaders">
+      <UniqueIdentifier>{3d7a124a-d819-4f92-91b7-07ad45638046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Textures">
+      <UniqueIdentifier>{f5aa5d6f-9457-4f78-92a3-7737beeda811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{e4c4f6a8-8910-4360-8066-5081bb3ab0ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\D3DApp.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Actor\Actor.cpp">
+      <Filter>Engine\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Actor\Camera.cpp">
+      <Filter>Engine\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Actor\DirectionalLightActor.cpp">
+      <Filter>Engine\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Actor\LightActor.cpp">
+      <Filter>Engine\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Actor\ReflectionActor.cpp">
+      <Filter>Engine\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\D3DUtil.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\GameTimer.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Geometry.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\GeometryGenerator.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\ImageLoader.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\LightHelper.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\MathHelper.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\tiny_obj_loader.cc">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\d3dxGlobal.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\EffectAPI.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\EffectLoad.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\EffectNonRuntime.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\EffectReflection.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\EffectRuntime.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Common\Effect\Effects.cpp">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\CFbx.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Object\Object.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Bloom.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\DebugWindow.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Gizmo.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Render.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RenderStates.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shaders\ShaderStructure.cpp">
+      <Filter>Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Textures\RenderTexture.cpp">
+      <Filter>Engine\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Textures\Texture.cpp">
+      <Filter>Engine\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\Asset.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\AssetDatabase.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Scene.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\DebugWindows.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\SkyBox.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\ObjectsRender.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\CubeMapRender.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\ShadowRender.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RenderCapsule.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\LightingRender.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\D3DApp.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Actor\Actor.h">
+      <Filter>Engine\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Actor\Camera.h">
+      <Filter>Engine\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Actor\DirectionalLightActor.h">
+      <Filter>Engine\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Actor\LightActor.h">
+      <Filter>Engine\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Actor\ReflectionActor.h">
+      <Filter>Engine\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\D3DUtil.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\GameTimer.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Geometry.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\GeometryGenerator.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\ImageLoader.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\LightHelper.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\MathHelper.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\tiny_obj_loader.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\d3dx11effect.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\d3dxGlobal.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\Effect.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\EffectBinaryFormat.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\EffectLoad.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\Effects.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\EffectStateBase11.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\EffectStates11.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\IUnknownImp.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\pchfx.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Common\Effect\SOParser.h">
+      <Filter>Engine\Common\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\CFbx.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Object\Object.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Bloom.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\DebugWindow.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Gizmo.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Render.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RenderStates.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shaders\ShaderStructure.h">
+      <Filter>Engine\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Textures\RenderTexture.h">
+      <Filter>Engine\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Textures\Texture.h">
+      <Filter>Engine\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Asset.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\AssetDatabase.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RenderCapsule.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Scene.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\DebugWindows.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\SkyBox.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\ObjectsRender.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\CubeMapRender.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\ShadowRender.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\LightingRender.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="JE.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Engine\Shaders\BasicMaterial.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Bloom.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\BoundingBox.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\BRDF.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\common.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\DebugWindow.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Gizmo.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Lighting.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\OutLine.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\ReflectionActor.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\Scene.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\ShadowMap.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\SkyBox.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\UISprite.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
