@@ -54,7 +54,7 @@ bool ShadowRender::Render(ID3D11DeviceContext* deviceContext, int positionX, int
 		{
 			DirectionalLightActor* pDL = (*DLi);
 
-			SetBackBufferRenderTarget(pDL->m_Shadow_Texture->GetRenderTargetView(), *ppDepthStencilView, NULL, NULL, TRUE, TRUE, TRUE, TRUE);
+			SetBackBufferRenderTarget(pDL->m_Shadow_Texture->GetRenderTargetView(), NULL, NULL, NULL, TRUE, TRUE, TRUE, TRUE);
 
 			for (std::list<Object*>::iterator li = pObjectManager->mObj_List.begin(); li != pObjectManager->mObj_List.end(); li++)
 			{

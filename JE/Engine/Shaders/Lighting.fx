@@ -55,15 +55,17 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-	float3 BaseColor = BasicColorTexture.Sample(TextureSampler, pin.TexCoord).xyz;
+	float4 BaseColor = BasicColorTexture.Sample(TextureSampler, pin.TexCoord);
 
+	float Opacity = BaseColor.a;
+	
 	float4 WorldNormal = NormalTexture.Sample(TextureSampler, pin.TexCoord)*2.0f - 1.0f;
 
 	float Metallic = NormalTexture.Sample(TextureSampler, pin.TexCoord).a;
 
 	//[flatten]
 	if (WorldNormal.a < -1.0f)
-		return float4(BaseColor, 1.0f);
+		return float4(BaseColor);
 	
 
 	//BaseColor = lerp(BaseColor, float3(0.25f,0.25f,0.25f), Metallic);
@@ -105,7 +107,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	float energyConservation2 = 1.0f - Roughness*0.2f;
 
-	float3 spec = GGX_Spec(WorldNormal.xyz, HalfVec, Roughness, 0.0f, BaseColor, SpecularColor.xyz, BRDFLUTTexture.Sample(LUTSampler, float2(LoH, Roughness)).zw) * energyConservation;
+	float3 spec = GGX_Spec(WorldNormal.xyz, HalfVec, Roughness, 0.0f, BaseColor.xyz, SpecularColor.xyz, BRDFLUTTexture.Sample(LUTSampler, float2(LoH, Roughness)).zw) * energyConservation;
 
 
 	float2 EnvBRDF = BRDFLUTTexture.Sample(LUTSampler, float2(NoV, Roughness)).xy;
@@ -117,15 +119,16 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 Reflection = ReflectionTexture.SampleLevel(TextureMipSampler, pin.TexCoord, 0) * (float4(lerp(SpecularColor.rgb, BaseColor.rgb, Metallic), 1.0f)
 		* EnvBRDF.x + EnvBRDF.y);// *lerp(energyConservation, energyConservation2, Metallic);
 
-	float4 result = (float4(lerp(BaseColor, BaseColor*0.05f, Metallic), 1.0f) + float4(spec, 1.0f))* diffuseFactor + Reflection*lerp(0.15f, 1.0f, Metallic);
+	float4 result = (float4(lerp(BaseColor.xyz, BaseColor.xyz*0.05f, Metallic), 1.0f) + float4(spec, 1.0f))* diffuseFactor + Reflection*lerp(0.15f, 1.0f, Metallic);
 
 	//float Bias = 100000 / pow(2, 32) + 1.0*0.0001f;
 	
+	result.a = Opacity;
+
 	if (ShadowCoord.z > ShadowTexture.Sample(ShadowTextureSampler, ShadowCoord.xy).x + 0.00001f * DepthInfo.z)
-		return lerp(float4(0, 0, 0, 1), result, 0.5f);
-	else
-	
-	return  result;
+		return lerp(float4(0, 0, 0, Opacity), result, 0.5f);
+	else	
+		return  result;
 }
 
 

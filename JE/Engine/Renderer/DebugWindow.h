@@ -33,6 +33,8 @@ public:
 	int m_screenWidth, m_screenHeight;
 	int m_bitmapWidth, m_bitmapHeight;
 
+	RenderTexture* m_BloomTexture;
+
 private:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();

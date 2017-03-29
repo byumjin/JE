@@ -81,6 +81,10 @@ public:
 
 	HRESULT LoadObj(const char* path);
 
+
+	void Calculatehandedness(const XMFLOAT3 &F1, const XMFLOAT3 &F2, XMFLOAT3 &TANGENT, const XMFLOAT3 &BINORMAL);
+
+
 	//FBX
 	HRESULT LoadFbx(const char* path);
 	void InitializeSdkObjects(FbxManager*& pManager, FbxScene*& pScene);

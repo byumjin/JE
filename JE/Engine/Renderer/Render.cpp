@@ -269,6 +269,7 @@ void Renderer::Create()
 	mDebugWindows.RenderPriority = DEBUG_RENDER + 1;
 	
 	mDebugWindows.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	mDebugWindows.m_BloomTexture = m_Bloom.m_GaussianHTexture;
 	mDebugWindows.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
 	
@@ -1049,7 +1050,7 @@ void Renderer::DrawScene()
 		md3dImmediateContext->RSSetState(RenderStates::WireframeRS);
 	}
 
-	DrawRender();
+	DrawRender();	
 
 	DrawUI();
 
@@ -1142,11 +1143,14 @@ void Renderer::DrawUI()
 
 
 	///////// Set BackBuffer Texture	
-	SetBackBufferRenderTarget(TRUE, FALSE, FALSE, FALSE);
+	//SetBackBufferRenderTarget(mRenderTargetView, mDepthStencilView, NULL, 0, TRUE, FALSE, TRUE, FALSE);
+	
 
 	//////////<--------- Draw BoundingBox
 	if (bshowBoundingBox)
 	{
+		SetBackBufferRenderTarget(TRUE, FALSE, FALSE, FALSE);
+
 		activeTech = mEffects.LineDrawFx->mTech;
 
 		D3DX11_TECHNIQUE_DESC techDesc3;
@@ -1169,8 +1173,7 @@ void Renderer::DrawUI()
 				// 0: not intersect 1: intersect 2: include
 				if (Check_IntersectAxisAlignedBoxFrustum((*li)) != 0)
 				{
-				
-						mEffects.LineDrawFx->SetAllVariables(XMLoadFloat4x4(&mWVP), (*li)->bSelected);					
+					mEffects.LineDrawFx->SetAllVariables(XMLoadFloat4x4(&mWVP), (*li)->bSelected);					
 
 					(*li)->DrawBoundingBox(md3dImmediateContext, activeTech, techDesc3);
 				}
@@ -1184,10 +1187,12 @@ void Renderer::DrawUI()
 
 
 	///////// <--------- Draw UISprite
-	SetBackBufferRenderTarget(TRUE, FALSE, TRUE, FALSE);
+	
 
 	if (bshowUISprite)
 	{
+		SetBackBufferRenderTarget(TRUE, FALSE, TRUE, FALSE);
+
 		activeTech = mEffects.UISpriteFx->UISpriteTech;
 		D3DX11_TECHNIQUE_DESC UISpritetechDesc;
 		activeTech->GetDesc(&UISpritetechDesc);

@@ -106,10 +106,7 @@ bool Scene::Render(ID3D11DeviceContext* deviceContext, int positionX, int positi
 	if(pTech == pEffects->BRDFLightingFX->mTech)
 		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->BRDFLightingFX);	
 	else if (pTech == pEffects->SceneFX->SceneTech)
-		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->SceneFX);
-	else if (pTech == pEffects->OutLineDrawFx->OutLineTech)
-		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->OutLineDrawFx);
-	
+		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->SceneFX);	
 
 	return true;
 }

@@ -101,6 +101,17 @@ float4 Depth(VertexOut pin) : SV_Target
 float4 Selected(VertexOut pin) : SV_Target
 {
 	return  SelectedTexture.Sample(TextureSampler, pin.TexCoord);	
+
+	//float Opacity = BasicTexture.Sample(TextureSampler, pin.TexCoord).a;
+
+	//return float4(Opacity, Opacity, Opacity, 1.0f);
+}
+
+float4 Opacity(VertexOut pin) : SV_Target
+{
+	float Opacity = BasicTexture.Sample(TextureSampler, pin.TexCoord).a;
+
+return float4(Opacity, Opacity, Opacity, 1.0f);
 }
 
 float4 UV(VertexOut pin) : SV_Target
@@ -204,7 +215,7 @@ technique11 SelectedTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, VS()));
 		SetGeometryShader(NULL);
-		SetPixelShader(CompileShader(ps_5_0, Selected()));
+		SetPixelShader(CompileShader(ps_5_0, UV()));
 	}
 }
 
@@ -214,7 +225,7 @@ technique11 OpacityTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, VS()));
 		SetGeometryShader(NULL);
-		SetPixelShader(CompileShader(ps_5_0, UV()));
+		SetPixelShader(CompileShader(ps_5_0, Opacity()));
 	}
 }
 

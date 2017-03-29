@@ -1071,6 +1071,21 @@ void Geometry::GetTBN()
 
 }
 
+void Geometry::Calculatehandedness(const XMFLOAT3 &F1, const XMFLOAT3 &F2, XMFLOAT3 &TANGENT, const XMFLOAT3 &BINORMAL)
+{
+	// Calculate handedness
+	XMFLOAT3 fFaceNormal;
+	fFaceNormal = MathHelper::XMFLOAT3_CROSS(F1, F2);
+
+	fFaceNormal = MathHelper::XMFLOAT3_NORMALIZE(fFaceNormal);
+
+	//U flip
+	if (MathHelper::XMFLOAT3_DOT(MathHelper::XMFLOAT3_CROSS(TANGENT, BINORMAL), fFaceNormal) < 0.0f)
+	{
+		TANGENT = XMFLOAT3(-TANGENT.x, -TANGENT.y, -TANGENT.z);
+	}
+}
+
 void Geometry::CalculateTriangleArray(long vertexCount, const XMFLOAT3 *vertex, const XMFLOAT3 *normal, const XMFLOAT2 *texcoord, long triangleCount, const Triangle *triangle)
 {
 	XMFLOAT3 *tan1 = new XMFLOAT3[vertexCount * 3];
@@ -1113,15 +1128,32 @@ void Geometry::CalculateTriangleArray(long vertexCount, const XMFLOAT3 *vertex, 
 		{
 			float r = 1.0f / (dino);
 			XMFLOAT3 TANGENT((v1 * e0x - v0 * e1x) * r,	(v1 * e0y - v0 * e1y) * r, (v1 * e0z - v0 * e1z) * r);
-			XMFLOAT3 BINORMAL((u0 * e1x - u1 * e0x) * r, (u0 * e1y - u1 * e0y) * r,	(u0 * e1z - u1 * e0z) * r);
+			//XMFLOAT3 BINORMAL((u0 * e1x - u1 * e0x) * r, (u0 * e1y - u1 * e0y) * r, (u0 * e1z - u1 * e0z) * r);
+
+			//XMFLOAT3 BINORMAL = MathHelper::XMFLOAT3_CROSS(normal[i1], TANGENT);
+
+			XMFLOAT3 BINORMAL1 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(normal[i1], TANGENT));
+			XMFLOAT3 BINORMAL2 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(normal[i2], TANGENT));
+			XMFLOAT3 BINORMAL3 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(normal[i3], TANGENT));
+
+			XMFLOAT3 TANGENT1 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(BINORMAL1, normal[i1]));
+			XMFLOAT3 TANGENT2 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(BINORMAL2, normal[i2]));
+			XMFLOAT3 TANGENT3 = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(BINORMAL3, normal[i3]));
+		
 
 
-			TANGENT = MathHelper::XMFLOAT3_NORMALIZE(TANGENT);
-			BINORMAL = MathHelper::XMFLOAT3_NORMALIZE(BINORMAL);
+			//TANGENT = MathHelper::XMFLOAT3_NORMALIZE(TANGENT);
+			//BINORMAL = MathHelper::XMFLOAT3_NORMALIZE(BINORMAL);
 
 			//XMFLOAT3 NORMAL;
 
+
+			Calculatehandedness(MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e0x, e0y, e0z)), MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e1x, e1y, e1z)), TANGENT1, BINORMAL1);
+			Calculatehandedness(MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e0x, e0y, e0z)), MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e1x, e1y, e1z)), TANGENT2, BINORMAL2);
+			Calculatehandedness(MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e0x, e0y, e0z)), MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e1x, e1y, e1z)), TANGENT3, BINORMAL3);
+
 			// Calculate handedness
+			/*
 			XMFLOAT3 fFaceNormal;
 			fFaceNormal = MathHelper::XMFLOAT3_CROSS(MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e0x, e0y, e0z)), MathHelper::XMFLOAT3_NORMALIZE(XMFLOAT3(e1x, e1y, e1z)));
 
@@ -1132,34 +1164,35 @@ void Geometry::CalculateTriangleArray(long vertexCount, const XMFLOAT3 *vertex, 
 			{
 				TANGENT = XMFLOAT3(-TANGENT.x, -TANGENT.y, -TANGENT.z);
 			}
+			*/
 
 			//NORMAL = normal[i1]; //MathHelper::XMFLOAT3_CROSS(TANGENT, BINORMAL);
 
 			//TANGENT
-			tan1[i1].x += TANGENT.x;
-			tan1[i1].y += TANGENT.y;
-			tan1[i1].z += TANGENT.z;
+			tan1[i1].x += TANGENT1.x;
+			tan1[i1].y += TANGENT1.y;
+			tan1[i1].z += TANGENT1.z;
 
-			tan1[i2].x += TANGENT.x;
-			tan1[i2].y += TANGENT.y;
-			tan1[i2].z += TANGENT.z;
+			tan1[i2].x += TANGENT2.x;
+			tan1[i2].y += TANGENT2.y;
+			tan1[i2].z += TANGENT2.z;
 
-			tan1[i3].x += TANGENT.x;
-			tan1[i3].y += TANGENT.y;
-			tan1[i3].z += TANGENT.z;
+			tan1[i3].x += TANGENT3.x;
+			tan1[i3].y += TANGENT3.y;
+			tan1[i3].z += TANGENT3.z;
 
 			//BINORMAL
-			tan2[i1].x += BINORMAL.x;
-			tan2[i1].y += BINORMAL.y;
-			tan2[i1].z += BINORMAL.z;
+			tan2[i1].x += BINORMAL1.x;
+			tan2[i1].y += BINORMAL1.y;
+			tan2[i1].z += BINORMAL1.z;
 
-			tan2[i2].x += BINORMAL.x;
-			tan2[i2].y += BINORMAL.y;
-			tan2[i2].z += BINORMAL.z;
+			tan2[i2].x += BINORMAL2.x;
+			tan2[i2].y += BINORMAL2.y;
+			tan2[i2].z += BINORMAL2.z;
 
-			tan2[i3].x += BINORMAL.x;
-			tan2[i3].y += BINORMAL.y;
-			tan2[i3].z += BINORMAL.z;
+			tan2[i3].x += BINORMAL3.x;
+			tan2[i3].y += BINORMAL3.y;
+			tan2[i3].z += BINORMAL3.z;
 
 			//NORMAL
 
