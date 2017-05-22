@@ -76,7 +76,7 @@ SamplerState LUTSampler
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 	AddressW = CLAMP;
-	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 };
 
