@@ -11,7 +11,10 @@ Key features
 * CubeMap Mip for Global Illumination
 * Light Bloom
 * Screen Space Reflection (Working…)
-* Lens flare (Working…)
+* Lens flare
+* Depth of Field
+* HBAO
+* Anti-Aliasing (Working…)
 * Shadow Map (Working…)
 	- LogPSM
 	- Cascade Shadow
