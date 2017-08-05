@@ -5,6 +5,9 @@ RenderTexture::RenderTexture()
 	m_renderTargetTexture = 0;
 	m_renderTargetView = 0;
 	m_shaderResourceView = 0;
+
+	m_depthStencilTexture = 0;
+	m_depthStencilView = 0;
 }
 
 
@@ -101,6 +104,63 @@ bool RenderTexture::Initialize(ID3D11Device* device, UINT textureWidth, UINT tex
 		return false;
 	}
 
+	// Create the depth/stencil buffer and view.
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+	depthStencilDesc.Width = textureWidth;
+	depthStencilDesc.Height = textureHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_R32G8X24_TYPELESS;// DXGI_FORMAT_R32_TYPELESS; // Use a typeless type here so that it can be both depth-stencil and shader resource.
+															// This will fail if we try a format like D32_FLOAT
+
+															// Use 4X MSAA? --must match swap chain MSAA values.
+	if (bEnable4xMsaa)
+	{
+		depthStencilDesc.SampleDesc.Count = 4;
+		depthStencilDesc.SampleDesc.Quality = m4xMsaaQuality - 1;
+	}
+	// No MSAA
+	else
+	{
+		depthStencilDesc.SampleDesc.Count = 1;
+		depthStencilDesc.SampleDesc.Quality = 0;
+	}
+
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;// | D3D11_BIND_SHADER_RESOURCE;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+
+	result = device->CreateTexture2D(&depthStencilDesc, 0, &m_depthStencilTexture);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	
+
+	// Create the depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	if (1 == depthStencilDesc.SampleDesc.Count) {
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	}
+	else {
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	}
+
+	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;// DXGI_FORMAT_D32_FLOAT;	// Make the view see this as D32_FLOAT instead of typeless
+	descDSV.Texture2D.MipSlice = 0;
+	descDSV.Flags = 0;
+
+	result = device->CreateDepthStencilView(m_depthStencilTexture, 0, &m_depthStencilView);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
+
 	return true;
 }
 
@@ -110,10 +170,16 @@ void RenderTexture::Shutdown()
 	ReleaseCOM(m_renderTargetTexture);
 	ReleaseCOM(m_shaderResourceView);
 
+	ReleaseCOM(m_depthStencilTexture);
+	ReleaseCOM(m_depthStencilView);
+
+
 	m_renderTargetTexture = 0;
 	m_renderTargetView = 0;
 	m_shaderResourceView = 0;
 
+	m_depthStencilTexture = 0;
+	m_depthStencilView = 0;
 	return;
 }
 
@@ -121,8 +187,8 @@ void RenderTexture::Shutdown()
 void RenderTexture::SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView)
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
-	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, depthStencilView);
-
+	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 	return;
 }
 
@@ -142,8 +208,8 @@ float red, float green, float blue, float alpha)
 	deviceContext->ClearRenderTargetView(m_renderTargetView, color);
 
 	// Clear the depth buffer.
-	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
+	//deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	return;
 }
 
@@ -162,11 +228,18 @@ ID3D11RenderTargetView* RenderTexture::GetRenderTargetView()
 	return  m_renderTargetView;
 }
 
+ID3D11DepthStencilView* RenderTexture::GetDepthStencilView()
+{
+	return  m_depthStencilView;
+}
+
 void RenderTexture::OnResize(UINT textureWidth, UINT textureHeight, ID3D11DeviceContext* d3dImmediateContext, ID3D11DepthStencilView* DepthStencilView)
 {
 	ReleaseCOM(m_renderTargetView);
 	ReleaseCOM(m_renderTargetTexture);
 	ReleaseCOM(m_shaderResourceView);
+	ReleaseCOM(m_depthStencilTexture);
+	ReleaseCOM(m_depthStencilView);
 
 	Initialize(mTextureInfo.device, textureWidth, textureHeight, mTextureInfo.textureDesc.MipLevels, mTextureInfo.textureDesc.ArraySize, mTextureInfo.textureDesc.Format, mTextureInfo.bEnable4xMsaa,
 		mTextureInfo.m4xMsaaQuality, mTextureInfo.textureDesc.Usage, mTextureInfo.textureDesc.BindFlags, mTextureInfo.textureDesc.CPUAccessFlags, mTextureInfo.textureDesc.MiscFlags);
@@ -367,6 +440,11 @@ void MultiRenderTexture::ReleaseRenderTarget(ID3D11DeviceContext* deviceContext)
 {	
 	ID3D11RenderTargetView* pNullRTV[] = { NULL, NULL, NULL, NULL, NULL};
 	deviceContext->OMSetRenderTargets(mInum, pNullRTV, NULL);	
+
+	ID3D11ShaderResourceView *pSRV[] = { NULL, NULL, NULL, NULL, NULL};
+	deviceContext->PSSetShaderResources(0, mInum, pSRV);
+
+
 }
 
 void MultiRenderTexture::ClearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView, float red, float green, float blue, float alpha)

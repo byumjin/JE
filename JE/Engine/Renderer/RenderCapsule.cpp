@@ -21,6 +21,7 @@ void RenderCapsule::UpdateBasicMatrix(XMFLOAT4X4 ObjWorldMat, Camera* pCamera)
 	if(mWorld != NULL)
 		XMStoreFloat4x4(mWorld, world);
 
+	XMStoreFloat4x4(&mWorldView, world*view);
 	XMStoreFloat4x4(&mView, view);
 	XMStoreFloat4x4(&mProj, proj);
 	XMStoreFloat4x4(&mViewProj, viewProj);
@@ -71,6 +72,12 @@ void RenderCapsule::UpdateBasicMatrixforDL(XMFLOAT4X4 ObjWorldMat, DirectionalLi
 void RenderCapsule::SetBackBufferRenderTarget(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV, ID3D11DepthStencilState* pDSS, UINT StencilRef,
 	bool bDepthStencil, bool bClearRenderTargetView, bool bClearDepth, bool bClearStencil)
 {
+	ID3D11RenderTargetView* pNullRTV[] = { NULL };
+	pdeviceContext->OMSetRenderTargets(1, pNullRTV, NULL);
+
+	ID3D11ShaderResourceView *const pSRV[1] = { NULL };
+	pdeviceContext->PSSetShaderResources(0, 1, pSRV);
+
 	pdeviceContext->OMSetRenderTargets(1, &pRTV, pDSV);
 
 	if (bClearRenderTargetView)
@@ -87,6 +94,12 @@ void RenderCapsule::SetBackBufferRenderTarget(ID3D11RenderTargetView* pRTV, ID3D
 
 void RenderCapsule::SetBackBufferRenderTarget(bool bDepthStencil, bool bClearRenderTargetView, bool bClearDepth, bool bClearStencil)
 {
+	ID3D11RenderTargetView* pNullRTV[] = { NULL };
+	pdeviceContext->OMSetRenderTargets(1, pNullRTV, NULL);
+
+	ID3D11ShaderResourceView *const pSRV[1] = { NULL };
+	pdeviceContext->PSSetShaderResources(0, 1, pSRV);
+
 	if (bDepthStencil)
 		pdeviceContext->OMSetRenderTargets(1, ppRenderTargetView, *ppDepthStencilView);
 	else

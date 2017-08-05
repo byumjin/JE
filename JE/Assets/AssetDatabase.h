@@ -64,6 +64,7 @@ public:
 		for (UINT i = 0; i < m_ListofGeometry.size(); i++)
 		{
 			Geometry* pGeo = FindAsset<Geometry>(m_ListofGeometry.at(i));
+			
 			delete pGeo;
 
 			delete[] m_ListofGeometry.at(i);

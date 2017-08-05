@@ -213,6 +213,8 @@ void SkyBox::OnResize(int ScreenWidth, int ScreenHeight, int MapWidth, int MapHe
 
 bool SkyBox::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY, XMFLOAT4X4 InvViewProj, ID3DX11EffectTechnique* pTech, Effects* pEffects)
 {
+	pMRTforDeferredR->ReleaseRenderTarget(deviceContext);
+
 	deviceContext->IASetInputLayout(InputLayouts::VertexInputDesc);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -245,6 +247,8 @@ bool SkyBox::Render(ID3D11DeviceContext* deviceContext, int positionX, int posit
 		pEffects->BasicFX->SetNulltoTextures();
 		pEffects->BasicFX->SkyBoxTech->GetPassByIndex(p)->Apply(0, deviceContext);
 	}
+
+	//pMRTforDeferredR->ReleaseRenderTarget(deviceContext);
 
 	return true;
 }

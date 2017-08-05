@@ -103,7 +103,9 @@ void DirectionalLightActor::UpdateRLU()
 
 void DirectionalLightActor::UpdateFrustrum(UINT width, UINT height)
 {
-	XMMATRIX PM = XMMatrixOrthographicLH((float)10, (float)10, 0.1f, 1000.0f);
+	//XMMATRIX PM = XMMatrixOrthographicLH((float)width, (float)height, 1.0f, 400.0f);
+	XMMATRIX PM = XMMatrixOrthographicLH((float)350, (float)350, 1.0f, 400.0f);
+	//XMMATRIX PM = XMMatrixOrthographicOffCenterLH(-(float)width, (float)width, -(float)height, (float)height, 1.0f, 400.0f);
 	XMStoreFloat4x4(&mProj, PM);
 	BoundingFrustum::CreateFromMatrix(mFrustum, PM);
 }

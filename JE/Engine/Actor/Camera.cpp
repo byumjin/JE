@@ -5,6 +5,12 @@ mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
 mLook(0.0f, 0.0f, 1.0f)
 {
+	bRotate1 = false;
+	bRotate2 = false;
+
+	bForward = false;
+	bBackward = false;
+
 	XMVECTOR R = XMLoadFloat3(&mRight);
 	XMVECTOR U = XMLoadFloat3(&mUp);
 	XMVECTOR L = XMLoadFloat3(&mLook);

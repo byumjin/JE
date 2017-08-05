@@ -171,8 +171,11 @@ BasicMaterialEffect::BasicMaterialEffect(ID3D11Device* device, const LPCWSTR fil
 
 
 	mWorld = mFX->GetVariableByName("gWorld")->AsMatrix();
+	mWorldView = mFX->GetVariableByName("gWorldView")->AsMatrix();
 	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
 	mWorldViewProj = mFX->GetVariableByName("gWorldViewProj")->AsMatrix();
+	
+	mInvView = mFX->GetVariableByName("gInvView")->AsMatrix();
 	mWorldInvTranspose = mFX->GetVariableByName("gWorldInvTranspose")->AsMatrix();
 	mInvViewProj = mFX->GetVariableByName("gInvViewProj")->AsMatrix();
 	mInvProj = mFX->GetVariableByName("gInvProj")->AsMatrix();
@@ -198,6 +201,9 @@ void BasicMaterialEffect::SetSkyBoxVariables(CXMMATRIX paraWorld, CXMMATRIX para
 {
 
 	SetMatrix(paraWorld, mWorld);
+
+	
+
 	SetMatrix(paraViewProj, mViewProj);
 	SetMatrix(paraWVP, mWorldViewProj);
 	SetMatrix(paraWIT, mWorldInvTranspose);
@@ -210,15 +216,20 @@ void BasicMaterialEffect::SetSkyBoxVariables(CXMMATRIX paraWorld, CXMMATRIX para
 	SetTexture(paraSkyBoxCubeMap, m_SkyBoxCubeMap);
 }
 
-void BasicMaterialEffect::SetAllVariables(CXMMATRIX paraWorld, CXMMATRIX paraViewProj, CXMMATRIX paraWVP, CXMMATRIX paraWIT, CXMMATRIX paraIVP, CXMMATRIX paraIP,
+void BasicMaterialEffect::SetAllVariables(CXMMATRIX paraWorld, CXMMATRIX paraWorldView, CXMMATRIX paraViewProj, CXMMATRIX paraWVP, CXMMATRIX paraIV, CXMMATRIX paraWIT, CXMMATRIX paraIVP, CXMMATRIX paraIP,
 	XMFLOAT3 paraEyePosW, float paraTime, bool parabSelected, ID3D11ShaderResourceView* DiffuseTexture, ID3D11ShaderResourceView* SpecularTexture,
 	ID3D11ShaderResourceView* NormalTexture)
 {
 	//Effect::SetAllVariables(paraWorld, paraViewProj, paraWVP, paraWIT, paraIVP, paraIP, paraEyePosW, paraTime);
 	
 	SetMatrix(paraWorld, mWorld);
+	SetMatrix(paraWorldView, mWorldView);
 	SetMatrix(paraViewProj, mViewProj);
 	SetMatrix(paraWVP, mWorldViewProj);
+
+	SetMatrix(paraIV, mInvView);
+	
+
 	SetMatrix(paraWIT, mWorldInvTranspose);
 	SetMatrix(paraIVP, mInvViewProj);
 	SetMatrix(paraIP, mInvProj);
@@ -358,12 +369,12 @@ DebugWindowEffect::DebugWindowEffect(ID3D11Device* device, const LPCWSTR filenam
 	m_SpecularTexture = mFX->GetVariableByName("SpecularTexture")->AsShaderResource();
 	mNormalTexture = mFX->GetVariableByName("NormalTexture")->AsShaderResource();
 	mDepthTexture = mFX->GetVariableByName("DepthTexture")->AsShaderResource();
-	mSelectedTexture = mFX->GetVariableByName("SelectedTexture")->AsShaderResource();
+	mAOTexture = mFX->GetVariableByName("AOTexture")->AsShaderResource();
 	m_UVTexture = mFX->GetVariableByName("UVTexture")->AsShaderResource();
 	m_EnvTexture = mFX->GetVariableByName("EnvTexture")->AsShaderResource();
 	m_BloomTexture = mFX->GetVariableByName("BloomTexture")->AsShaderResource();
 	m_ShadowTexture = mFX->GetVariableByName("ShadowTexture")->AsShaderResource();
-
+	m_LensFlareTexture = mFX->GetVariableByName("LensFlareTexture")->AsShaderResource();
 
 	mWorld = mFX->GetVariableByName("gWorld")->AsMatrix();
 	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
@@ -386,6 +397,8 @@ DebugWindowEffect::DebugWindowEffect(ID3D11Device* device, const LPCWSTR filenam
 	DepthTech = mFX->GetTechniqueByName("DepthTech");
 	SelectedTech = mFX->GetTechniqueByName("SelectedTech");
 	OpacityTech = mFX->GetTechniqueByName("OpacityTech");
+
+	LensFlareTech = mFX->GetTechniqueByName("LensFlareTech");
 
 	AOTech = mFX->GetTechniqueByName("AOTech");
 	EnvTech = mFX->GetTechniqueByName("EnvTech");
@@ -415,11 +428,13 @@ DebugWindowEffect::~DebugWindowEffect()
 
 	
 	ReleaseCOM(Custom01Tech);
+
+	ReleaseCOM(LensFlareTech);
 }
 
 void DebugWindowEffect::SetAllVariables(CXMMATRIX paraWorld, CXMMATRIX paraViewProj, CXMMATRIX paraWVP, CXMMATRIX paraWIT, CXMMATRIX paraIVP, CXMMATRIX paraIP,
 	XMFLOAT3 paraEyePosW, float paraTime, ID3D11ShaderResourceView* paraBasicTexture, ID3D11ShaderResourceView* paraSpecularTexture, ID3D11ShaderResourceView* paraNormalTexture, ID3D11ShaderResourceView* paraDepthTexture,
-	ID3D11ShaderResourceView* paraSelectedTexture, ID3D11ShaderResourceView* paraUVTexture, ID3D11ShaderResourceView* paraEnvTexture, ID3D11ShaderResourceView* paraBloomTexture,
+	ID3D11ShaderResourceView* paraAOTexture, ID3D11ShaderResourceView* paraUVTexture, ID3D11ShaderResourceView* paraEnvTexture, ID3D11ShaderResourceView* paraBloomTexture, ID3D11ShaderResourceView* paraLensFlareTexture,
 	ID3D11ShaderResourceView* paraShadowTexture,
 	CXMMATRIX paraInvDepthViewProj)
 {
@@ -439,8 +454,10 @@ void DebugWindowEffect::SetAllVariables(CXMMATRIX paraWorld, CXMMATRIX paraViewP
 	SetTexture(paraSpecularTexture, m_SpecularTexture);
 	SetTexture(paraNormalTexture, mNormalTexture);
 	SetTexture(paraDepthTexture, mDepthTexture);
-	SetTexture(paraSelectedTexture, mSelectedTexture);
+	SetTexture(paraAOTexture, mAOTexture);
 	SetTexture(paraUVTexture, m_UVTexture);
+
+	SetTexture(paraLensFlareTexture, m_LensFlareTexture);
 
 	SetTexture(paraEnvTexture, m_EnvTexture);	
 	SetTexture(paraBloomTexture, m_BloomTexture);
@@ -710,8 +727,155 @@ void BloomEffect::SetAllVariables(CXMMATRIX paraViewProj,  ID3D11ShaderResourceV
 
 #pragma endregion
 
+#pragma region LensFlareEffect
+
+LensFlareEffect::LensFlareEffect(ID3D11Device* device, const LPCWSTR filename) : Effect(device, filename)
+{
+	m_TextureParameterCount = 1;
+
+	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
+
+	mView = mFX->GetVariableByName("gView")->AsMatrix();
+
+	m_SceneMap = mFX->GetVariableByName("SceneMap")->AsShaderResource();
+	m_BasicColorMap = mFX->GetVariableByName("HighLightMap")->AsShaderResource();
 
 
+
+	m_DirtMask = mFX->GetVariableByName("DirtMaskMap")->AsShaderResource();
+	m_StarBurst = mFX->GetVariableByName("StarBurstMap")->AsShaderResource();
+
+	m_factor01 = mFX->GetVariableByName("factor01")->AsScalar();
+	m_factor02 = mFX->GetVariableByName("factor02")->AsScalar();
+	m_factor03 = mFX->GetVariableByName("factor03")->AsScalar();
+	m_factor04 = mFX->GetVariableByName("factor04")->AsScalar();
+	m_factor05 = mFX->GetVariableByName("factor05")->AsScalar();
+	m_factor06 = mFX->GetVariableByName("factor06")->AsScalar();
+	m_factor07 = mFX->GetVariableByName("factor07")->AsScalar();
+
+
+
+
+	LensFlareTech = mFX->GetTechniqueByName("LensFlareTech");
+
+	GaussianVerticalTech = mFX->GetTechniqueByName("GaussianVerticalTech");
+	GaussianHeightTech = mFX->GetTechniqueByName("GaussianHeightTech");
+}
+
+LensFlareEffect::~LensFlareEffect()
+{
+	ReleaseCOM(LensFlareTech);
+	ReleaseCOM(GaussianVerticalTech);
+	ReleaseCOM(GaussianHeightTech);
+}
+
+void LensFlareEffect::SetNulltoTextures()
+{
+	SetTexture(NULL, m_SceneMap);
+	SetTexture(NULL, m_BasicColorMap);
+	SetTexture(NULL, m_DirtMask);
+	SetTexture(NULL, m_StarBurst);
+}
+
+void LensFlareEffect::SetAllVariables(CXMMATRIX paraViewProj, CXMMATRIX paraView, ID3D11ShaderResourceView* paraSceneMap, ID3D11ShaderResourceView* paraBasicColorMap
+	, ID3D11ShaderResourceView* paraDirtMask
+	, ID3D11ShaderResourceView* paraStarBurst
+	
+	, float* pFactor)
+{
+	SetMatrix(paraViewProj, mViewProj);
+	SetMatrix(paraView, mView);
+
+	SetTexture(paraSceneMap, m_SceneMap);
+	SetTexture(paraBasicColorMap, m_BasicColorMap);
+
+	SetTexture(paraDirtMask, m_DirtMask);
+	SetTexture(paraStarBurst, m_StarBurst);
+
+	SetScalar(pFactor[0], m_factor01);
+	SetScalar(pFactor[1], m_factor02);
+	SetScalar(pFactor[2], m_factor03);
+	SetScalar(pFactor[3], m_factor04);
+	SetScalar(pFactor[4], m_factor05);
+	SetScalar(pFactor[5], m_factor06);
+	SetScalar(pFactor[6], m_factor07);
+
+
+}
+
+
+#pragma endregion
+
+#pragma region DepthOfFieldEffect
+
+DepthOfFieldEffect::DepthOfFieldEffect(ID3D11Device* device, const LPCWSTR filename) : Effect(device, filename)
+{
+	m_TextureParameterCount = 1;
+
+	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
+	
+	mInvProj = mFX->GetVariableByName("gInvProj")->AsMatrix();
+	
+
+	m_SceneMap = mFX->GetVariableByName("SceneMap")->AsShaderResource();
+	m_BlurMap = mFX->GetVariableByName("BlurMap")->AsShaderResource();
+	m_DepthMap = mFX->GetVariableByName("DepthMap")->AsShaderResource();
+	
+	
+	
+	DOFTech = mFX->GetTechniqueByName("DOFTech");
+	HBlurTech = mFX->GetTechniqueByName("HBlurTech");
+	VBlurTech = mFX->GetTechniqueByName("VBlurTech");
+
+	m_factor01 = mFX->GetVariableByName("factor01")->AsScalar();
+	m_factor02 = mFX->GetVariableByName("factor02")->AsScalar();
+	m_factor03 = mFX->GetVariableByName("factor03")->AsScalar();
+	m_factor04 = mFX->GetVariableByName("factor04")->AsScalar();
+	m_factor05 = mFX->GetVariableByName("factor05")->AsScalar();
+	m_factor06 = mFX->GetVariableByName("factor06")->AsScalar();
+	m_factor07 = mFX->GetVariableByName("factor07")->AsScalar();
+
+	vDofParams = mFX->GetVariableByName("vDofParams")->AsVector();
+
+}
+
+DepthOfFieldEffect::~DepthOfFieldEffect()
+{
+	ReleaseCOM(DOFTech);
+	ReleaseCOM(HBlurTech);
+	ReleaseCOM(VBlurTech);
+}
+
+void DepthOfFieldEffect::SetNulltoTextures()
+{
+	SetTexture(NULL, m_SceneMap);
+	SetTexture(NULL, m_DepthMap);
+	SetTexture(NULL, m_BlurMap);
+}
+
+void DepthOfFieldEffect::SetAllVariables(CXMMATRIX paraWVP, CXMMATRIX paraViewProj, CXMMATRIX paraInvProj, ID3D11ShaderResourceView* paraSceneMap,
+	ID3D11ShaderResourceView* paraDepthMap, ID3D11ShaderResourceView* paraBlurMap, float* pFactor, XMFLOAT4 paraDof)
+{
+	SetMatrix(paraViewProj, mViewProj);
+	SetMatrix(paraInvProj, mInvProj);
+
+	SetTexture(paraSceneMap, m_SceneMap);
+	SetTexture(paraDepthMap, m_DepthMap);
+	SetTexture(paraBlurMap, m_BlurMap);
+
+	SetScalar(pFactor[0], m_factor01);
+	SetScalar(pFactor[1], m_factor02);
+	SetScalar(pFactor[2], m_factor03);
+	SetScalar(pFactor[3], m_factor04);
+	SetScalar(pFactor[4], m_factor05);
+	SetScalar(pFactor[5], m_factor06);
+	SetScalar(pFactor[6], m_factor07);
+
+	SetVector4(paraDof, vDofParams);
+	
+}
+
+#pragma endregion
 
 #pragma region SceneEffect
 SceneEffect::SceneEffect(ID3D11Device* device, const LPCWSTR filename) : Effect(device, filename)
@@ -720,23 +884,30 @@ SceneEffect::SceneEffect(ID3D11Device* device, const LPCWSTR filename) : Effect(
 
 	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
 	m_SceneMap = mFX->GetVariableByName("SceneMap")->AsShaderResource();
+	m_ColorMap = mFX->GetVariableByName("ColorMap")->AsShaderResource();
 	SceneTech = mFX->GetTechniqueByName("SceneTech");
+	MulTech = mFX->GetTechniqueByName("MulTech");
+	CompTech = mFX->GetTechniqueByName("CompTech");
 }
 
 SceneEffect::~SceneEffect()
 {
 	ReleaseCOM(SceneTech);
+	ReleaseCOM(MulTech);
+	ReleaseCOM(CompTech);
 }
 
 void SceneEffect::SetNulltoTextures()
 {
 	SetTexture(NULL, m_SceneMap);
+	SetTexture(NULL, m_ColorMap);
 }
 
-void SceneEffect::SetAllVariables(CXMMATRIX paraWVP, CXMMATRIX paraViewProj, ID3D11ShaderResourceView* paraSceneMap)
+void SceneEffect::SetAllVariables(CXMMATRIX paraWVP, CXMMATRIX paraViewProj, ID3D11ShaderResourceView* paraSceneMap, ID3D11ShaderResourceView* paraColorMap)
 {
 	SetMatrix(paraViewProj, mViewProj);
 	SetTexture(paraSceneMap, m_SceneMap);
+	SetTexture(paraColorMap, m_ColorMap);
 }
 
 
@@ -775,6 +946,81 @@ void ShadowMapEffect::SetAllVariables(CXMMATRIX paraWVP, CXMMATRIX paraViewProj,
 }
 
 #pragma region Effects
+
+
+#pragma region HBAOEffect
+HBAOEffect::HBAOEffect(ID3D11Device* device, const LPCWSTR filename) : Effect(device, filename)
+{
+	m_TextureParameterCount = 1;
+
+	mView = mFX->GetVariableByName("gView")->AsMatrix();
+	mProj = mFX->GetVariableByName("gProj")->AsMatrix();
+	mViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
+	m_pixelSize = mFX->GetVariableByName("pixelSize")->AsVector();
+	m_DepthMap = mFX->GetVariableByName("DepthMap")->AsShaderResource();
+	m_NormalMap = mFX->GetVariableByName("NormalMap")->AsShaderResource();
+	m_RandomNoiseMap = mFX->GetVariableByName("RandomNoiseMap")->AsShaderResource();
+	m_PositionMap = mFX->GetVariableByName("PositionMap")->AsShaderResource();
+
+	mInvProj = mFX->GetVariableByName("gInvProj")->AsMatrix();
+	mInvViewProj = mFX->GetVariableByName("gInvViewProj")->AsMatrix();
+
+	m_factor01 = mFX->GetVariableByName("factor01")->AsScalar();
+	m_factor02 = mFX->GetVariableByName("factor02")->AsScalar();
+	m_factor03 = mFX->GetVariableByName("factor03")->AsScalar();
+	m_factor04 = mFX->GetVariableByName("factor04")->AsScalar();
+	m_factor05 = mFX->GetVariableByName("factor05")->AsScalar();
+	m_factor06 = mFX->GetVariableByName("factor06")->AsScalar();
+	m_factor07 = mFX->GetVariableByName("factor07")->AsScalar();
+
+	HBAOTech = mFX->GetTechniqueByName("HBAOTech");
+
+	GaussianVerticalTech = mFX->GetTechniqueByName("GaussianVerticalTech");
+	GaussianHeightTech = mFX->GetTechniqueByName("GaussianHeightTech");
+}
+
+HBAOEffect::~HBAOEffect()
+{
+	ReleaseCOM(HBAOTech);
+	ReleaseCOM(GaussianVerticalTech);
+	ReleaseCOM(GaussianHeightTech);
+}
+
+void HBAOEffect::SetNulltoTextures()
+{
+	SetTexture(NULL, m_DepthMap);
+	SetTexture(NULL, m_NormalMap);
+	SetTexture(NULL, m_RandomNoiseMap);
+	SetTexture(NULL, m_PositionMap);
+}
+
+void HBAOEffect::SetAllVariables(CXMMATRIX paraView, CXMMATRIX paraProj, CXMMATRIX paraViewProj, CXMMATRIX paraInvViewProj, CXMMATRIX paraInvProj, ID3D11ShaderResourceView* paraDepthMap, ID3D11ShaderResourceView* paraNormalMap, ID3D11ShaderResourceView* paraRandomNoiselMap,
+	ID3D11ShaderResourceView* paraPositionMap, float* pFactor, XMFLOAT2 pPixelSize)
+{
+	SetMatrix(paraView, mView);
+	SetMatrix(paraProj, mProj);
+	SetMatrix(paraViewProj, mViewProj);	
+	SetMatrix(paraInvProj, mInvProj);
+
+	SetMatrix(paraInvViewProj, mInvViewProj);
+
+	SetTexture(paraDepthMap, m_DepthMap);
+	SetTexture(paraNormalMap, m_NormalMap);
+	SetTexture(paraRandomNoiselMap, m_RandomNoiseMap);
+	SetTexture(paraPositionMap, m_PositionMap);
+
+	SetScalar(pFactor[0], m_factor01);
+	SetScalar(pFactor[1], m_factor02);
+	SetScalar(pFactor[2], m_factor03);
+	SetScalar(pFactor[3], m_factor04);
+	SetScalar(pFactor[4], m_factor05);
+	SetScalar(pFactor[5], m_factor06);
+	SetScalar(pFactor[6], m_factor07);
+
+	SetVector2(pPixelSize, m_pixelSize);
+
+}
+#pragma endregion
 
 void Effects::InitAll(ID3D11Device* device)
 {
@@ -828,12 +1074,27 @@ void Effects::InitAll(ID3D11Device* device)
 	BloomFX = new BloomEffect(device, FilePath);
 
 	wcscpy_s(FilePath, DirPath);
+	wcscat_s(FilePath, L"\\Engine\\Shaders\\LensFlare.fx");
+	LensFlareFX = new LensFlareEffect(device, FilePath);
+
+	wcscpy_s(FilePath, DirPath);
 	wcscat_s(FilePath, L"\\Engine\\Shaders\\Scene.fx");
 	SceneFX = new SceneEffect(device, FilePath);
 
 	wcscpy_s(FilePath, DirPath);
 	wcscat_s(FilePath, L"\\Engine\\Shaders\\ShadowMap.fx");
 	ShadowMapFx = new ShadowMapEffect(device, FilePath);
+
+	wcscpy_s(FilePath, DirPath);
+	wcscat_s(FilePath, L"\\Engine\\Shaders\\HBAO.fx");
+	HBAOFX = new HBAOEffect(device, FilePath);
+
+
+	wcscpy_s(FilePath, DirPath);
+	wcscat_s(FilePath, L"\\Engine\\Shaders\\DepthOfField.fx");
+	DOFFX = new DepthOfFieldEffect(device, FilePath);
+
+	
 }
 
 void Effects::DestroyAll()
@@ -849,9 +1110,15 @@ void Effects::DestroyAll()
 
 	SafeDelete(SkyBoxFX);
 	SafeDelete(BloomFX);
+
+	SafeDelete(LensFlareFX);
+
 	SafeDelete(SceneFX);
 
 	SafeDelete(ShadowMapFx);
+	SafeDelete(HBAOFX);
+
+	SafeDelete(DOFFX);
 }
 
 void Effects::ReleaseTextureResource(ID3D11DeviceContext* deviceContext, ID3DX11EffectTechnique* pTech, Effect* pEffect)
@@ -947,6 +1214,15 @@ void Effects::ReleaseTextureResource(ID3D11DeviceContext* deviceContext, ID3DX11
 			continue;
 		}
 
+		LensFlareEffect* pLensFlareEffect = dynamic_cast<LensFlareEffect*>(pEffect);
+		if (pLensFlareEffect)
+		{
+			pLensFlareEffect->SetNulltoTextures();
+			pTech->GetPassByIndex(p)->Apply(0, deviceContext);
+			continue;
+		}
+
+
 		SceneEffect* pSceneEffect = dynamic_cast<SceneEffect*>(pEffect);
 		if (pSceneEffect)
 		{
@@ -959,6 +1235,22 @@ void Effects::ReleaseTextureResource(ID3D11DeviceContext* deviceContext, ID3DX11
 		if (pShadowMapEffect)
 		{
 			pShadowMapEffect->SetNulltoTextures();
+			pTech->GetPassByIndex(p)->Apply(0, deviceContext);
+			continue;
+		}
+
+		HBAOEffect* pHBAOEffect = dynamic_cast<HBAOEffect*>(pEffect);
+		if (pHBAOEffect)
+		{
+			pHBAOEffect->SetNulltoTextures();
+			pTech->GetPassByIndex(p)->Apply(0, deviceContext);
+			continue;
+		}
+
+		DepthOfFieldEffect* pPPCEffect = dynamic_cast<DepthOfFieldEffect*>(pEffect);
+		if (pPPCEffect)
+		{
+			pPPCEffect->SetNulltoTextures();
 			pTech->GetPassByIndex(p)->Apply(0, deviceContext);
 			continue;
 		}

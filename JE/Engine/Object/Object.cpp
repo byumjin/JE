@@ -421,14 +421,14 @@ void Object::Scale(float x, float y, float z)
 	Scal.y *= y;
 	Scal.z *= z;
 
-	if (Scal.x < 0.1f)
-		Scal.x = 0.1f;
+	if (Scal.x < 0.01f)
+		Scal.x = 0.01f;
 
-	if (Scal.y < 0.1f)
-		Scal.y = 0.1f;
+	if (Scal.y < 0.01f)
+		Scal.y = 0.01f;
 
-	if (Scal.z < 0.1f)
-		Scal.z = 0.1f;
+	if (Scal.z < 0.01f)
+		Scal.z = 0.01f;
 
 	//TO DO
 	XMStoreFloat4x4(&mWorld, XMMatrixMultiply(XMMatrixIdentity(), XMMatrixScaling(Scal.x, Scal.y, Scal.z)));

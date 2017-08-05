@@ -47,9 +47,9 @@ public:
 	virtual void BuildActorBuffers(ID3D11Device *pd3dDevice) {};
 	void BuildVertexBuffers(ID3D11Device *pd3dDevice, Vertex *pvertices, D3D11_USAGE USAGE, UINT totalVertexCount, UINT BINDFALGS, UINT CPUACCESSFLAGS, UINT MISCFLAGS, ID3D11Buffer** pVertexBuffer);
 	void BuildIndexBuffers(ID3D11Device *pd3dDevice, UINT *pindices, D3D11_USAGE USAGE, UINT totalIndexCount, UINT BINDFALGS, UINT CPUACCESSFLAGS, UINT MISCFLAGS, ID3D11Buffer** pIndexBuffer);
-	void UpdateBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 EyeWorldPos);
+	void UpdateBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 EyeWorldPos, XMFLOAT3 LookVec);
 
-	void Render(ID3D11DeviceContext* pd3dImmediateContext, XMFLOAT3 EyeWorldPos, Effects* pEffects, XMFLOAT4X4 ViewMat, XMFLOAT4X4 ProjMat, ID3DX11EffectTechnique* pTech,
+	void Render(ID3D11DeviceContext* pd3dImmediateContext, XMFLOAT3 EyeWorldPos, XMFLOAT3 LookVec, Effects* pEffects, XMFLOAT4X4 ViewMat, XMFLOAT4X4 ProjMat, ID3DX11EffectTechnique* pTech,
 		D3DX11_TECHNIQUE_DESC &techDesc, ID3D11ShaderResourceView* pShaderResourceView);
 
 	bool bSelected;

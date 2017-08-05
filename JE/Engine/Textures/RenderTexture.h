@@ -35,13 +35,16 @@ public:
 	ID3D11RenderTargetView* GetRenderTargetView();
 	ID3D11ShaderResourceView* GetShaderResourceView();
 	ID3D11Texture2D* GetRenderTargetTexture();
-
+	ID3D11DepthStencilView* GetDepthStencilView();
 private:
 
 	TextureInfo mTextureInfo;
 
 	ID3D11Texture2D* m_renderTargetTexture;
 	ID3D11RenderTargetView* m_renderTargetView;
+
+	ID3D11Texture2D* m_depthStencilTexture;
+	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11ShaderResourceView* m_shaderResourceView;
 };
 

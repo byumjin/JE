@@ -62,10 +62,7 @@ bool CheckOutline(float2 UV)
 	if (UV.x < 0.0f || UV.y < 0.0f)
 		return false;
 	else
-	{
 		return (StencilTexture.Sample(TextureSampler, UV).x >= 1.0f);
-			     
-	}
 }
 
 float4 DrawOutline(VertexOut pin) : SV_Target
@@ -73,6 +70,46 @@ float4 DrawOutline(VertexOut pin) : SV_Target
 	float padx = 1.0f / gTextureSize.x;
 	float pady = 1.0f / gTextureSize.y;
 
+	
+
+	float horizEdge = 0.0f;
+
+	horizEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(-padx, -pady)).x * 3.0f;
+	horizEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(-padx, 0.0f)).x * 10.0f;
+	horizEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(-padx, pady)).x * 3.0f;
+
+	horizEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(padx, -pady)).x * 3.0f;
+	horizEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(padx, 0.0f)).x * 10.0f;
+	horizEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(padx, pady)).x * 3.0f;
+	
+	float vertEdge = 0.0f;
+
+	vertEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(-padx, -pady)).x * 3.0f;
+	vertEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(0.0f, -pady)).x * 10.0f;
+	vertEdge -= StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(padx, -pady)).x * 3.0f;
+
+	vertEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(-padx, pady)).x * 3.0f;
+	vertEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(0.0f, pady)).x * 10.0f;
+	vertEdge += StencilTexture.Sample(TextureSampler, pin.TexCoord + float2(padx, pady)).x * 3.0f;
+
+	float len = sqrt(horizEdge*horizEdge + vertEdge*vertEdge);
+
+	if (len > 0.5f)
+	{
+		return float4(1.0f, 0.5f, 0.0f, 1.0f);
+	}
+	else if ((StencilTexture.Sample(TextureSampler, pin.TexCoord)).x >= 1.0f)
+	{
+		return float4(0.0f, 0.5f, 1.0f, 0.2f);
+	}
+	else
+	{
+		return float4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+
+	
+
+	/*
 	float padx2 = padx*2.0f;
 	float pady2 = pady*2.0f;
 
@@ -114,6 +151,7 @@ float4 DrawOutline(VertexOut pin) : SV_Target
 	}
 	else
 		return float4(0.0f, 0.0f, 0.0f, 0.0f);	
+	*/
 }
 
 technique11 FillSilhouetteTech

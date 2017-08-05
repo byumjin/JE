@@ -75,6 +75,10 @@ Renderer::~Renderer()
 
 	ReleaseCOM(m_LUT_Texture);
 	ReleaseCOM(m_LUT_SRV);
+
+	m_DirtMaskTexture.Shutdown();
+	m_StarBurstTexture.Shutdown();
+	m_RandomNoiseTexture.Shutdown();
 }
 
 void Renderer::Shutdown()
@@ -84,6 +88,13 @@ void Renderer::Shutdown()
 
 	m_Scene.Shutdown();	
 	m_Bloom.Shutdown();
+
+	m_LensFlare.Shutdown();
+
+	m_HBAO.Shutdown();
+	
+	m_DepthOfField.Shutdown();
+
 	mDebugWindows.Shutdown();
 	
 	m_SkyBox.Shutdown();	
@@ -130,6 +141,8 @@ void Renderer::ClearResources()
 	mObjectManager.mObj_List.clear();
 	
 	AssetDatabase::GetInstance()->Shutdown();
+
+	
 }
 
 void Renderer::Destroy()
@@ -221,6 +234,8 @@ void Renderer::Create()
 
 	BuildBRDFLUT();
 
+	BuiltInTextures();
+
 	m_Scene.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
 
 
@@ -231,20 +246,20 @@ void Renderer::Create()
 	InsertRenderer(&m_SkyBox);
 
 	m_ObjectsRender.RenderPriority = RENDERING + 10;
-	m_ObjectsRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	//m_ObjectsRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
 	m_ObjectsRender.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, NULL, &m_Scene, m_LUT_SRV);
 	InsertRenderer(&m_ObjectsRender);
 
 	m_CubeMapRender.RenderPriority = RENDERING + 20;
-	m_CubeMapRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	//m_CubeMapRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
 	m_CubeMapRender.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, NULL, &m_Scene, m_LUT_SRV);
 	InsertRenderer(&m_CubeMapRender);
 
 
 	m_ShadowRender.RenderPriority = RENDERING + 30;
-	m_ShadowRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	//m_ShadowRender.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
 	m_ShadowRender.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, NULL, &m_Scene, m_LUT_SRV);
 	InsertRenderer(&m_ShadowRender);	
@@ -255,7 +270,31 @@ void Renderer::Create()
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
 	InsertRenderer(&m_LightingRender);
 
-	m_Bloom.RenderPriority = POSTPROCESS + 1;
+	
+	m_HBAO.RenderPriority = POSTPROCESS;
+	//m_HBAO.SetTextureDivision(2, 2);
+	m_HBAO.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	m_HBAO.m_RandomNoiseTexture = &m_RandomNoiseTexture;
+
+	m_HBAO.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
+		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
+	InsertRenderer(&m_HBAO);
+	
+
+	
+	m_DepthOfField.RenderPriority = POSTPROCESS + 3;
+	m_DepthOfField.SetTextureDivision(2, 2);
+	m_DepthOfField.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	
+	m_DepthOfField.m_HBAOTexture = m_HBAO.m_GaussianVTexture;
+
+	m_DepthOfField.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
+		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
+
+	InsertRenderer(&m_DepthOfField);
+	
+
+	m_Bloom.RenderPriority = POSTPROCESS + 5;
 	m_Bloom.SetTextureDivision(2, 2);
 	
 	m_Bloom.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
@@ -264,17 +303,68 @@ void Renderer::Create()
 
 	InsertRenderer(&m_Bloom);	
 
+	m_LensFlare.RenderPriority = POSTPROCESS + 10;
+	m_LensFlare.SetTextureDivision(2, 2);
 
-	std::list<DirectionalLightActor*>::iterator ppDLi = mDirectionalLightActorManager.mDLA_List.begin();
+	m_LensFlare.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+
+	m_LensFlare.m_HighLightTexture = m_Bloom.m_GaussianHTexture;
+
+	m_LensFlare.m_DirtMaskTexture = &m_DirtMaskTexture;
+	m_LensFlare.m_StarBurstTexture = &m_StarBurstTexture;
+	m_LensFlare.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
+		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
+
+	InsertRenderer(&m_LensFlare);
+
+	
+	
+	
+
+	//std::list<DirectionalLightActor*>::iterator ppDLi = mDirectionalLightActorManager.mDLA_List.begin();
 	mDebugWindows.RenderPriority = DEBUG_RENDER + 1;
 	
 	mDebugWindows.Initialize(md3dDevice, mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+	
 	mDebugWindows.m_BloomTexture = m_Bloom.m_GaussianHTexture;
+	mDebugWindows.m_LensFlareTexture = m_LensFlare.m_GaussianHTexture;
+	
+	mDebugWindows.m_HBAOTexture = m_HBAO.m_GaussianHTexture;
+	//mDebugWindows.m_HBAOTexture = m_LensFlare.m_GaussianHTexture;
+	
+	//DirectionalLightActor* pDL = (*ppDLi);
+	//mDebugWindows.pShadowTexture = pDL->m_Shadow_Texture;
+
 	mDebugWindows.InitExternValue(md3dImmediateContext, &mMRTforDeferredR, &mCamera, &mCameraForRenderWindow, &mEyePosW, &mTimer, &mRenderTargetView, &mDepthStencilView,
 		&mObjectManager, &m_ReflectionActorManager, &mDirectionalLightActorManager, &mRenderTextureManger, &mWorld, &m_Scene, m_LUT_SRV);
 	
 	InsertRenderer(&mDebugWindows);
 		
+}
+
+void Renderer::BuiltInTextures()
+{
+	DWORD  dwBytesWrite = 0;
+	char   ReadBuffer[4096] = { 0 };
+
+	DWORD Len = MAX_PATH;
+	WCHAR LUTPath[MAX_PATH];
+
+	GetCurrentDirectory(Len, LUTPath);
+	wcscat_s(LUTPath, L"\\Assets\\Textures\\LensFlare\\DirtMaskTextureExample.png");
+
+	m_DirtMaskTexture.LoadFromFilename(md3dDevice, LUTPath);
+
+	GetCurrentDirectory(Len, LUTPath);
+	wcscat_s(LUTPath, L"\\Assets\\Textures\\LensFlare\\StarBurst.png");
+
+	m_StarBurstTexture.LoadFromFilename(md3dDevice, LUTPath);
+
+
+	GetCurrentDirectory(Len, LUTPath);
+	wcscat_s(LUTPath, L"\\Assets\\Textures\\RandomNoiseTex.png");
+
+	m_RandomNoiseTexture.LoadFromFilename(md3dDevice, LUTPath);
 }
 
 void Renderer::BuildBRDFLUT()
@@ -494,12 +584,16 @@ void Renderer::OnLoadMap(HWND hwnd)
 			if ((*li)->m_Shadow_Texture == NULL)
 			{
 				(*li)->m_Shadow_Texture = new RenderTexture();
-				(*li)->m_Shadow_Texture->Initialize(md3dDevice, mClientWidth, mClientHeight, 1, 1, DXGI_FORMAT_R32_FLOAT,
+				//(*li)->m_Shadow_Texture->Initialize(md3dDevice, mClientWidth, mClientHeight, 1, 1, DXGI_FORMAT_R32_FLOAT,
+				//		FALSE, 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, 0);
+
+				(*li)->m_Shadow_Texture->Initialize(md3dDevice, SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1, 1, DXGI_FORMAT_R32_FLOAT,
 						FALSE, 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, 0);
 
 				(*li)->UpdateRLU();
 				(*li)->UpdateFrustrum(mClientWidth, mClientHeight);
-				(*li)->m_Shadow_Texture->OnResize(mClientWidth, mClientHeight, md3dImmediateContext, NULL);
+				//(*li)->m_Shadow_Texture->OnResize(mClientWidth, mClientHeight, md3dImmediateContext, NULL);
+				//(*li)->m_Shadow_Texture->OnResize(SHADOWMAP_SIZE, SHADOWMAP_SIZE, md3dImmediateContext, NULL);
 			}
 
 			//(*li)->UpdateFrustrum(mClientWidth, mClientHeight);
@@ -861,9 +955,30 @@ void Renderer::OnResize()
 	
 	//m_SceneTexture->OnResize(mClientWidth, mClientHeight, md3dImmediateContext, mDepthStencilView);
 
+	if (mDirectionalLightActorManager.mDLA_List.size() > 0)
+	{
+		for (std::list<DirectionalLightActor*>::iterator DLi = mDirectionalLightActorManager.mDLA_List.begin(); DLi != mDirectionalLightActorManager.mDLA_List.end(); DLi++)
+		{
+			if ((*DLi)->m_Shadow_Texture == NULL)
+			{
+				(*DLi)->m_Shadow_Texture = new RenderTexture();
+				//(*DLi)->m_Shadow_Texture->Initialize(md3dDevice, mClientWidth, mClientHeight, 1, 1, DXGI_FORMAT_R32_FLOAT,
+				//	FALSE, 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, 0);
+
+				(*DLi)->m_Shadow_Texture->Initialize(md3dDevice, SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1, 1, DXGI_FORMAT_R32_FLOAT,
+					FALSE, 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, 0);
+			}
+			(*DLi)->UpdateRLU();
+			//(*DLi)->UpdateFrustrum(mClientWidth, mClientHeight);
+			//(*DLi)->m_Shadow_Texture->OnResize(mClientWidth*2, mClientHeight * 2, md3dImmediateContext, NULL);
+			//(*DLi)->m_Shadow_Texture->OnResize(SHADOWMAP_SIZE, SHADOWMAP_SIZE, md3dImmediateContext, NULL);
+		}
+	}
+
 	for (UINT i = 0; i < m_RenderCapsules.size(); i++)
 	{
 		m_RenderCapsules.at(i)->OnResize(mClientWidth, mClientHeight, mClientWidth, mClientHeight);
+		//m_RenderCapsules.at(i)->OnResize(mClientWidth, mClientHeight, 100, 100);
 	}
 	
 
@@ -873,33 +988,18 @@ void Renderer::OnResize()
 	
 	
 
-	if (mDirectionalLightActorManager.mDLA_List.size() > 0)
-	{
-		for (std::list<DirectionalLightActor*>::iterator DLi = mDirectionalLightActorManager.mDLA_List.begin(); DLi != mDirectionalLightActorManager.mDLA_List.end(); DLi++)
-		{
-			if ((*DLi)->m_Shadow_Texture == NULL)
-			{
-				(*DLi)->m_Shadow_Texture = new RenderTexture();
-				(*DLi)->m_Shadow_Texture->Initialize(md3dDevice, mClientWidth, mClientHeight, 1, 1, DXGI_FORMAT_R32_FLOAT,
-					FALSE, 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, 0);
-			}			
-
-			(*DLi)->UpdateFrustrum(mClientWidth, mClientHeight);
-			(*DLi)->m_Shadow_Texture->OnResize(mClientWidth, mClientHeight, md3dImmediateContext, NULL);
-		}
-	}
+	
 
 	
-	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), NEAR_DIST, FAR_DIST*FAR_DIST);
-	//mCamera.SetLensOrthographic((float)mClientWidth/16.0f, (float)mClientHeight / 16.0f, NEAR_DIST, FAR_DIST*FAR_DIST);
+	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), NEAR_DIST, FAR_DIST*FAR_DIST);	
+	//mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), NEAR_DIST, FAR_DIST);
 	mCamera.SetFrustumFromProjection();
 	
 	mCameraForRenderWindow.SetLens(0.25f*MathHelper::Pi, AspectRatio(), NEAR_DIST, FAR_DIST);
-	//mCameraForRenderWindow.SetLensOrthographic((float)mClientWidth, (float)mClientHeight, NEAR_DIST, 10000.0f);
 	mCameraForRenderWindow.SetFrustumFromProjection();
 
+	//mGizmoCamera.SetLensOrthographic((float)mClientWidth, (float)mClientHeight, 0.1f, 10000.0f);
 	mGizmoCamera.SetLensOrthographic((float)mClientWidth, (float)mClientHeight, 0.1f, 10000.0f);
-	//mGizmoCamera.SetFrustumFromProjection();
 }
 
 void Renderer::UpdateScene(float dt)
@@ -1043,6 +1143,19 @@ void Renderer::DrawScene()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
+	if(mCamera.bRotate1)
+		mCamera.RotateY(mTimer.DeltaTime()*0.1f);
+	else if(mCamera.bRotate2)
+		mCamera.RotateY(mTimer.DeltaTime()*-0.1f);
+
+
+
+	if (mCamera.bForward)
+		mCamera.Walk(mTimer.DeltaTime()*5.0f);
+	else if (mCamera.bBackward)
+		mCamera.Walk(mTimer.DeltaTime()*-5.0f);
+
+
 	mCamera.UpdateViewMatrix();
 
 	if (bShowWireframe)
@@ -1067,8 +1180,19 @@ void Renderer::DrawRender()
 {
 	for(UINT i = 0; i < m_RenderCapsules.size(); i++)
 	{
-		if(m_RenderCapsules.at(i)->RenderPriority < UI)
-			m_RenderCapsules.at(i)->Render(md3dImmediateContext, 0, 0, mInvViewProj, NULL, &mEffects);
+		if (m_RenderCapsules.at(i)->RenderPriority < UI)
+		{
+			if (m_RenderCapsules.at(i)->RenderPriority == RENDERING + 30)
+			{
+				SetViewport(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
+				m_RenderCapsules.at(i)->Render(md3dImmediateContext, 0, 0, mInvViewProj, NULL, &mEffects);
+				SetViewport(mClientWidth, mClientHeight);
+			}
+			else
+				m_RenderCapsules.at(i)->Render(md3dImmediateContext, 0, 0, mInvViewProj, NULL, &mEffects);
+
+			
+		}
 	}
 }
 
@@ -1200,13 +1324,13 @@ void Renderer::DrawUI()
 		for (std::list<DirectionalLightActor*>::iterator DLi = mDirectionalLightActorManager.mDLA_List.begin(); DLi != mDirectionalLightActorManager.mDLA_List.end(); DLi++)
 		{
 			UpdateBasicMatrix((*DLi)->GetWorldMatrix(), &mCamera);
-			(*DLi)->Render(md3dImmediateContext, mCamera.GetPosition(), &mEffects, mView, mProj, activeTech, UISpritetechDesc, m_UITextureList[0].GetShaderResourceView());
+			(*DLi)->Render(md3dImmediateContext, mCamera.GetPosition(), mCamera.mLook, &mEffects, mView, mProj, activeTech, UISpritetechDesc, m_UITextureList[0].GetShaderResourceView());
 		}
 
 		for (std::list<ReflectionActor*>::iterator RAi = m_ReflectionActorManager.m_RA_List.begin(); RAi != m_ReflectionActorManager.m_RA_List.end(); RAi++)
 		{
 			UpdateBasicMatrix((*RAi)->GetWorldMatrix(), &mCamera);
-			(*RAi)->Render(md3dImmediateContext, mCamera.GetPosition(), &mEffects, mView, mProj, activeTech, UISpritetechDesc, m_UITextureList[1].GetShaderResourceView());
+			(*RAi)->Render(md3dImmediateContext, mCamera.GetPosition(), mCamera.mLook, &mEffects, mView, mProj, activeTech, UISpritetechDesc, m_UITextureList[1].GetShaderResourceView());
 		}
 	}
 
@@ -1214,7 +1338,7 @@ void Renderer::DrawUI()
 
 	///////// ---------> Draw UISprite
 
-
+	/*
 	///////// <--------- Draw Gizmo
 	SetBackBufferRenderTarget(TRUE, FALSE, TRUE, FALSE);
 
@@ -1237,7 +1361,7 @@ void Renderer::DrawUI()
 	D3DX11_TECHNIQUE_DESC techDesc4;
 	activeTech->GetDesc(&techDesc4);
 	mGizmo.Render(md3dImmediateContext, activeTech, &mEffects, mWorld, mWVP, -0.75f, -0.75f, 6.0f, 0);
-
+	*/
 
 	//SelectedGizmo
 	if (bSelectedObjExist && mGizmo.GetSelectedObj() != NULL)
@@ -1656,7 +1780,7 @@ void Renderer::OnSystemKeyDown(WPARAM btnState)
 
 void Renderer::OnKeyDown(WPARAM btnState)
 {
-
+	/*
 	if (btnState == VK_HOME)
 	{
 		mCamera.RotateY(mTimer.DeltaTime()*20.0f);
@@ -1665,6 +1789,12 @@ void Renderer::OnKeyDown(WPARAM btnState)
 	if (btnState == VK_END)
 	{
 		mCamera.RotateY(mTimer.DeltaTime()*-20.0f);
+	}
+	*/
+
+	if (btnState >= '0' && btnState <= '9')
+	{
+		mDebugWindows.PushSwitch(btnState - ('0'));
 	}
 
 	if (btnState == VK_F11)
@@ -1675,6 +1805,30 @@ void Renderer::OnKeyDown(WPARAM btnState)
 	if (btnState == VK_F12)
 	{
 		mCamera.Pitch(mTimer.DeltaTime()*-20.0f);
+	}
+
+	if (btnState == VK_HOME)
+	{
+		mCamera.bRotate1 = !mCamera.bRotate1;
+		mCamera.bRotate2 = false;
+	}
+
+	if (btnState == VK_END)
+	{
+		mCamera.bRotate2 = !mCamera.bRotate2;
+		mCamera.bRotate1 = false;
+	}
+
+	if (btnState == VK_INSERT)
+	{
+		mCamera.bForward = !mCamera.bForward;
+		mCamera.bBackward = false;
+	}
+
+	if (btnState == VK_DELETE)
+	{
+		mCamera.bBackward = !mCamera.bBackward;
+		mCamera.bForward = false;
 	}
 
 	if (btnState == (65 + 'x' - 'a'))
@@ -1796,7 +1950,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(1.0f, 0.0f, 0.0f);
+			pSelectedObj->Translation(0.1f, 0.0f, 0.0f);
 		}
 	}
 
@@ -1806,7 +1960,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(-1.0f, 0.0f, 0.0f);
+			pSelectedObj->Translation(-0.1f, 0.0f, 0.0f);
 		}
 	}
 
@@ -1816,7 +1970,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(0.0f, 1.0f, 0.0f);
+			pSelectedObj->Translation(0.0f, 0.1f, 0.0f);
 		}
 	}
 
@@ -1826,7 +1980,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(0.0f, -1.0f, 0.0f);
+			pSelectedObj->Translation(0.0f, -0.1f, 0.0f);
 		}
 	}
 
@@ -1836,7 +1990,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(0.0f, 0.0f, 1.0f);
+			pSelectedObj->Translation(0.0f, 0.0f, 0.1f);
 		}
 	}
 
@@ -1846,7 +2000,7 @@ void Renderer::OnKeyDown(WPARAM btnState)
 		if (bSelectedObjExist)
 		{
 			Object* pSelectedObj = mGizmo.GetSelectedObj();
-			pSelectedObj->Translation(0.0f, 0.0f, -1.0f);
+			pSelectedObj->Translation(0.0f, 0.0f, -0.1f);
 		}
 	}
 

@@ -4,6 +4,7 @@
 #ifndef _ShadowRender_H_
 #define _ShadowRender_H_
 
+#define SHADOWMAP_SIZE 8192
 
 //////////////
 // INCLUDES //

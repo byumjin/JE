@@ -202,19 +202,26 @@ void Actor::CalculateRotaionMatrix(XMFLOAT3 CameraPos, XMFLOAT4X4 ViewMat)
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixMultiply(XMLoadFloat4x4(&m_WorldMatrix), XMMatrixTranslation(mWorldPosition.x, mWorldPosition.y, mWorldPosition.z)));
 }
 
-void Actor::UpdateBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 EyeWorldPos)
+void Actor::UpdateBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 EyeWorldPos, XMFLOAT3 LookVec)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	Vertex* verticesPtr;
 
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	//XMFLOAT3 look = XMFLOAT3( EyeWorldPos.x - GetWorldPosition().x, EyeWorldPos.y - GetWorldPosition().y, EyeWorldPos.z - GetWorldPosition().z);
-	XMFLOAT3 look = EyeWorldPos - GetWorldPosition();
+	//XMFLOAT3 look = EyeWorldPos - GetWorldPosition();
+
+	XMFLOAT3 look = LookVec;
+
+	//XMFLOAT4X4 InvLookMatrix;
+	//XMStoreFloat4x4(&InvLookMatrix, MathHelper::Inverse(m_LookMat));
+	//XMFLOAT4 lookW = MathHelper::XMFLOAT4_MUL_XMFLOAT4X4(XMFLOAT4(look.x, look.y, look.z, 1.0f), InvLookMatrix);
+
 
 	//look.y = 0.0f; // y-axis aligned, so project to xz-plane
 	look = MathHelper::XMFLOAT3_NORMALIZE(look);
-	XMFLOAT3 right = MathHelper::XMFLOAT3_CROSS(up, look);
-	up = MathHelper::XMFLOAT3_CROSS(look, right);
+	XMFLOAT3 right = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(look, up));
+	up = MathHelper::XMFLOAT3_NORMALIZE(MathHelper::XMFLOAT3_CROSS(right, look));
 	/*
 	XMFLOAT3 inverseEyePos = XMFLOAT3(-EyeWorldPos.x, -EyeWorldPos.x, -EyeWorldPos.z);
 
@@ -312,10 +319,10 @@ void Actor::BuildIndexBuffers(ID3D11Device *pd3dDevice, UINT *pindices, D3D11_US
 	HR(pd3dDevice->CreateBuffer(&ibd, &iinitData, pIndexBuffer));
 }
 
-void Actor::Render(ID3D11DeviceContext* pd3dImmediateContext, XMFLOAT3 EyeWorldPos, Effects* pEffects, XMFLOAT4X4 ViewMat, XMFLOAT4X4 ProjMat, ID3DX11EffectTechnique* pTech,
+void Actor::Render(ID3D11DeviceContext* pd3dImmediateContext, XMFLOAT3 EyeWorldPos, XMFLOAT3 LookVec, Effects* pEffects, XMFLOAT4X4 ViewMat, XMFLOAT4X4 ProjMat, ID3DX11EffectTechnique* pTech,
 	D3DX11_TECHNIQUE_DESC &techDesc, ID3D11ShaderResourceView* pShaderResourceView)
 {
-	UpdateBuffer(pd3dImmediateContext, EyeWorldPos);
+	
 
 	
 	//m_WorldMat = XMLoadFloat4x4(&m_WorldMatrix);
@@ -325,6 +332,8 @@ void Actor::Render(ID3D11DeviceContext* pd3dImmediateContext, XMFLOAT3 EyeWorldP
 	m_ProjMat = XMLoadFloat4x4(&ProjMat);
 	//XMMATRIX MVP = XMMatrixMultiply(XMMatrixMultiply(m_WorldMat, m_LookMat), m_ProjMat);
 	XMMATRIX worldViewProj = m_WorldMat* m_LookMat * m_ProjMat;
+
+	UpdateBuffer(pd3dImmediateContext, EyeWorldPos, LookVec);
 
 	pEffects->UISpriteFx->SetAllVariables(XMLoadFloat4x4(&GetWorldMatrix()), m_LookMat*m_ProjMat, worldViewProj, EyeWorldPos, bSelected, pShaderResourceView);
 

@@ -107,6 +107,12 @@ bool Scene::Render(ID3D11DeviceContext* deviceContext, int positionX, int positi
 		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->BRDFLightingFX);	
 	else if (pTech == pEffects->SceneFX->SceneTech)
 		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->SceneFX);	
+	else if (pTech == pEffects->OutLineDrawFx->OutLineTech)
+		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->OutLineDrawFx);
+	else if (pTech == pEffects->SceneFX->MulTech)
+		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->SceneFX);
+	else if (pTech == pEffects->SceneFX->CompTech)
+		RenderBuffer(deviceContext, positionX, positionY, InvViewProj, pTech, pEffects->SceneFX);
 
 	return true;
 }

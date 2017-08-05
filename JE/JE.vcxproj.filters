@@ -168,6 +168,15 @@
     <ClCompile Include="Engine\Renderer\LightingRender.cpp">
       <Filter>Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Renderer\LensFlare.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\HBAO.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\DepthOfField.cpp">
+      <Filter>Engine\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -311,6 +320,15 @@
     <ClInclude Include="Engine\Renderer\LightingRender.h">
       <Filter>Engine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Renderer\LensFlare.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\HBAO.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\DepthOfField.h">
+      <Filter>Engine\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="JE.rc">
@@ -358,6 +376,15 @@
       <Filter>Engine\Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="Engine\Shaders\UISprite.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\LensFlare.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\HBAO.fx">
+      <Filter>Engine\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine\Shaders\DepthOfField.fx">
       <Filter>Engine\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -30,7 +30,8 @@ public:
 	virtual void Shutdown();
 	virtual void OnResize(int ScreenWidth, int ScreenHeight, int MapWidth, int MapHeight);
 	virtual bool Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY, XMFLOAT4X4 InvViewProj, ID3DX11EffectTechnique* pTech, Effects* pEffects);
-	
+	void PushSwitch(int x);
+
 	DebugWindow m_DebugWindow[12];
 
 	//bool *pBshowDebugWindows;
@@ -42,13 +43,16 @@ public:
 
 
 	RenderTexture* m_BloomTexture;
+	RenderTexture* m_LensFlareTexture;
+	RenderTexture* m_HBAOTexture;
+
 	RenderTexture* preflectionTexture;
 	RenderTexture* pGaussianHTexture;
 
 	RenderTexture* pShadowTexture;
 
 
-
+	bool Switch[12];
 private:
 	
 };

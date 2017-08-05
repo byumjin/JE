@@ -103,6 +103,7 @@ public:
 	XMFLOAT4X4 mView;
 	XMFLOAT4X4 mProj;
 
+	XMFLOAT4X4 mWorldView;
 	XMFLOAT4X4 mViewProj;
 
 	XMFLOAT4X4 mWVP;

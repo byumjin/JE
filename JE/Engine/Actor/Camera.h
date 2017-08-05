@@ -164,12 +164,18 @@ public:
 		return mRotateMat;
 	}
 
+	XMFLOAT3 mLook;
+	bool bRotate1;
+	bool bRotate2;
+
+	bool bForward;
+	bool bBackward;
 private:
 
 	XMFLOAT3 mPosition;
 	XMFLOAT3 mRight;
 	XMFLOAT3 mUp;
-	XMFLOAT3 mLook;
+	
 
 	XMFLOAT4 mRotate;
 	XMFLOAT4X4 mRotateMat;
@@ -186,6 +192,8 @@ private:
 	XMFLOAT4X4 mProj;
 
 	BoundingFrustum mFrustum;
+
+	
 };
 
 #endif

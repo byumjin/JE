@@ -28,6 +28,10 @@
 #include "ShadowRender.h"
 #include "LightingRender.h"
 
+#include "LensFlare.h"
+#include "HBAO.h"
+#include "DepthOfField.h"
+
 using namespace DirectX;
 
 class Renderer : public CD3DApp
@@ -82,6 +86,9 @@ public:
 
 	//void BuildSkyBox();
 	void BuildBRDFLUT();
+
+	void BuiltInTextures();
+
 	void CreateUISprite();
 
 	void ResortRa();
@@ -166,6 +173,10 @@ private:
 	ID3D11ShaderResourceView* m_LUT_SRV;
 	ID3D11Texture2D* m_LUT_Texture;
 
+	Texture m_DirtMaskTexture;
+	Texture m_StarBurstTexture;
+	Texture m_RandomNoiseTexture;
+
 	XMFLOAT3 mEyePosW;
 
 	bool bShowWireframe;
@@ -181,6 +192,12 @@ private:
 
 	Scene m_Scene;	
 	Bloom m_Bloom;
+	LensFlare m_LensFlare;
+	
+	HBAO m_HBAO;
+
+	DepthOfField m_DepthOfField;
+
 	SkyBox m_SkyBox;
 	Gizmo mGizmo;
 	ShadowRender m_ShadowRender;

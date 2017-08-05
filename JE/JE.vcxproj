@@ -14,7 +14,7 @@
     <ProjectGuid>{1D7C9866-F80A-40F7-B94D-23133509F788}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>JE</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -42,14 +42,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.2\include;$(SolutionDir)\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.2\lib\vs2015\x86\debug;$(SolutionDir)\JE\DirectXTex\Libraries\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;$(SolutionDir)\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\lib\vs2015\x86\debug;$(SolutionDir)\JE\DirectXTex\Libraries\Debug;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;C:\Users\knuck\Documents\Visual Studio 2015\Projects\JE\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\release;C:\Users\knuck\Documents\Visual Studio 2015\Projects\JE\JE\DirectXTex\Libraries\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;D:\JE\JE\DirectXTex\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\lib\vs2015\x86\release;D:\JE\JE\DirectXTex\Libraries\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -83,7 +83,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;D3DCompiler.lib;Effects11.lib;dxerr.lib;dxgi.lib;dxguid.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;DirectXTex.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -117,8 +117,11 @@
     <ClCompile Include="Engine\Renderer\DebugWindow.cpp" />
     <ClCompile Include="Engine\Renderer\DebugWindows.cpp" />
     <ClCompile Include="Engine\Renderer\Gizmo.cpp" />
+    <ClCompile Include="Engine\Renderer\HBAO.cpp" />
+    <ClCompile Include="Engine\Renderer\LensFlare.cpp" />
     <ClCompile Include="Engine\Renderer\LightingRender.cpp" />
     <ClCompile Include="Engine\Renderer\ObjectsRender.cpp" />
+    <ClCompile Include="Engine\Renderer\DepthOfField.cpp" />
     <ClCompile Include="Engine\Renderer\Render.cpp" />
     <ClCompile Include="Engine\Renderer\RenderCapsule.cpp" />
     <ClCompile Include="Engine\Renderer\RenderStates.cpp" />
@@ -165,8 +168,11 @@
     <ClInclude Include="Engine\Renderer\DebugWindow.h" />
     <ClInclude Include="Engine\Renderer\DebugWindows.h" />
     <ClInclude Include="Engine\Renderer\Gizmo.h" />
+    <ClInclude Include="Engine\Renderer\HBAO.h" />
+    <ClInclude Include="Engine\Renderer\LensFlare.h" />
     <ClInclude Include="Engine\Renderer\LightingRender.h" />
     <ClInclude Include="Engine\Renderer\ObjectsRender.h" />
+    <ClInclude Include="Engine\Renderer\DepthOfField.h" />
     <ClInclude Include="Engine\Renderer\Render.h" />
     <ClInclude Include="Engine\Renderer\RenderCapsule.h" />
     <ClInclude Include="Engine\Renderer\RenderStates.h" />
@@ -223,6 +229,21 @@
       <FileType>Document</FileType>
     </CustomBuild>
     <CustomBuild Include="Engine\Shaders\UISprite.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Engine\Shaders\LensFlare.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Engine\Shaders\HBAO.fx">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Engine\Shaders\DepthOfField.fx">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

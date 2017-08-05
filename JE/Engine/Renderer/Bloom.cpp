@@ -9,18 +9,15 @@ Bloom::Bloom()
 	m_indexBuffer = NULL;
 
 	// Set the number of vertices in the vertex array.
-	m_vertexCount = 6;
+	m_vertexCount = 4;
 
 	// Create the vertex array.
 	m_Vertice = new Vertex[m_vertexCount];
 
-
 	m_Vertice[0].TexCoord = (XMFLOAT2(0.0f, 0.0f));
 	m_Vertice[1].TexCoord = (XMFLOAT2(1.0f, 1.0f));
 	m_Vertice[2].TexCoord = (XMFLOAT2(0.0f, 1.0f));
-	m_Vertice[3].TexCoord = (XMFLOAT2(0.0f, 0.0f));
-	m_Vertice[4].TexCoord = (XMFLOAT2(1.0f, 0.0f));
-	m_Vertice[5].TexCoord = (XMFLOAT2(1.0f, 1.0f));
+	m_Vertice[3].TexCoord = (XMFLOAT2(1.0f, 0.0f));
 }
 
 
@@ -140,23 +137,26 @@ bool Bloom::Render(ID3D11DeviceContext* deviceContext, int positionX, int positi
 	pdeviceContext->GenerateMips(m_GaussianHTexture->GetShaderResourceView());	
 
 	//SetBackBufferRenderTarget(*ppRenderTargetView, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE);
-	SetBackBufferRenderTarget(FALSE, TRUE, FALSE, FALSE);
+	
+	SetBackBufferRenderTarget(FALSE, FALSE, FALSE, FALSE);
+
+	//SetBackBufferRenderTarget(pRenderTextureManger->mRT_List.at(SCENETEXTURE)->GetRenderTargetView(), NULL, NULL, NULL,   FALSE, TRUE, FALSE, FALSE);
 
 	UpdateBasicMatrix(*mWorld, pCameraForRenderWindow);
 	
 
-	pEffects->SceneFX->SetAllVariables(XMLoadFloat4x4(&mWVP), XMLoadFloat4x4(&mViewProj), pRenderTextureManger->mRT_List.at(SCENETEXTURE)->GetShaderResourceView());
-	pScene->Render(pdeviceContext, 0, 0, mInvViewProj, pEffects->SceneFX->SceneTech, pEffects);
+	//pEffects->SceneFX->SetAllVariables(XMLoadFloat4x4(&mWVP), XMLoadFloat4x4(&mViewProj), pRenderTextureManger->mRT_List.at(SCENETEXTURE)->GetShaderResourceView());
+	//pScene->Render(pdeviceContext, 0, 0, mInvViewProj, pEffects->SceneFX->SceneTech, pEffects);
 
-	SetBlendState(FALSE, FALSE, TRUE, D3D11_BLEND_ONE, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD, D3D11_BLEND_ONE, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD, D3D11_COLOR_WRITE_ENABLE_ALL);
-	pEffects->SceneFX->SetAllVariables(XMLoadFloat4x4(&mWVP), XMLoadFloat4x4(&mViewProj), m_GaussianHTexture->GetShaderResourceView());
+	SetBlendState(FALSE, FALSE, TRUE, D3D11_BLEND_ONE, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD, D3D11_BLEND_ZERO, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD, D3D11_COLOR_WRITE_ENABLE_ALL);
+	pEffects->SceneFX->SetAllVariables(XMLoadFloat4x4(&mWVP), XMLoadFloat4x4(&mViewProj), m_GaussianHTexture->GetShaderResourceView(), NULL);
 	pScene->Render(pdeviceContext, 0, 0, mInvViewProj, pEffects->SceneFX->SceneTech, pEffects);
 
 	//ReleaseBlendState();
 	pdeviceContext->OMSetBlendState(NULL, NULL, 0xffffffff);
 
 	ReleaseCOM(pBlendState);
-
+	
 	return true;
 }
 
@@ -208,10 +208,9 @@ bool Bloom::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
-	int i;
-
+	
 	// Set the number of indices in the index array.
-	m_indexCount = m_vertexCount;
+	m_indexCount = 6;
 
 	// Create the vertex array.
 	vertices = new Vertex[m_vertexCount];
@@ -231,10 +230,12 @@ bool Bloom::InitializeBuffers(ID3D11Device* device)
 	memset(vertices, 0, (sizeof(Vertex)* m_vertexCount));
 
 	// Load the index array with data.
-	for (i = 0; i < m_indexCount; i++)
-	{
-		indices[i] = i;
-	}
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 0;
+	indices[4] = 3;
+	indices[5] = 1;
 
 	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -341,32 +342,20 @@ bool Bloom::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX, int
 	//top = 1.0f;
 	//bottom = -1.0f;
 
-	// Load the vertex array with data.
-	XMFLOAT4 vertex = CalculateVertex(left, top, InvViewProj);
-
+	// Load the vertex array with data.	
 	// First triangle.
+
+	XMFLOAT4 vertex = CalculateVertex(left, top, InvViewProj);
 	m_Vertice[0].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z);  // Top left.
 
 	vertex = CalculateVertex(right, bottom, InvViewProj);
-
 	m_Vertice[1].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z); // Bottom right.	
 
 	vertex = CalculateVertex(left, bottom, InvViewProj);
-
 	m_Vertice[2].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z); // Bottom left.	
 
-	vertex = CalculateVertex(left, top, InvViewProj);
-
-	// Second triangle.
-	m_Vertice[3].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z);  // Top left.	
-
 	vertex = CalculateVertex(right, top, InvViewProj);
-
-	m_Vertice[4].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z);  // Top right.	
-
-	vertex = CalculateVertex(right, bottom, InvViewProj);
-
-	m_Vertice[5].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z);  // Bottom right.	
+	m_Vertice[3].Position = XMFLOAT3(vertex.x, vertex.y, vertex.z);  // Top right.	
 
 																	 // Lock the vertex buffer so it can be written to.
 	result = deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

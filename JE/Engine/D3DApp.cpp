@@ -206,7 +206,7 @@ void CD3DApp::OnResize()
 			mSwapChain->GetContainingOutput(&pOutput);
 			UINT numModes = 1024;
 			DXGI_MODE_DESC modes[1024];
-			pOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0, &numModes, modes);
+			pOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM /*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/, 0, &numModes, modes);
 			pOutput->Release();
 
 			currentMode = numModes - 1;
@@ -235,7 +235,7 @@ void CD3DApp::OnResize()
 
 
 	
-	HR(mSwapChain->ResizeBuffers(1, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+	HR(mSwapChain->ResizeBuffers(1, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM /*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 	HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&mBackBuffer)));
 	HR(md3dDevice->CreateRenderTargetView(mBackBuffer, 0, &mRenderTargetView));
 		
@@ -300,6 +300,18 @@ void CD3DApp::OnResize()
 	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
 
 	//CreateDepthStencilState();
+}
+
+void CD3DApp::SetViewport(UINT Width, UINT Height)
+{
+	mScreenViewport.TopLeftX = 0;
+	mScreenViewport.TopLeftY = 0;
+	mScreenViewport.Width = static_cast<float>(Width);
+	mScreenViewport.Height = static_cast<float>(Height);
+	mScreenViewport.MinDepth = 0.0f;
+	mScreenViewport.MaxDepth = 1.0f;
+
+	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
 }
 
 LRESULT CD3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -439,6 +451,7 @@ LRESULT CD3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_ACTIVATE:
 		
+		/*
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
 			m_bFocus = false;
@@ -449,6 +462,10 @@ LRESULT CD3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			m_bFocus = true;
 			ShowWindow(mhMainWnd, SW_SHOWNORMAL);
 		}
+		*/
+
+		m_bFocus = true;
+		ShowWindow(mhMainWnd, SW_SHOWNORMAL);
 
 		return 0;
 
@@ -754,7 +771,7 @@ BOOL CALLBACK CD3DApp::CreateMaterialDlgProc(HWND hwnd, UINT Message, WPARAM wPa
 	LPCTSTR strMaterial[] = { L"BASICMATERIAL" };
 
 	UINT countMaterial[] = { 3 };
-	UINT iSelectedMaterial;
+//	UINT iSelectedMaterial;
 
 	switch (Message)
 	{
@@ -847,7 +864,7 @@ BOOL CALLBACK CD3DApp::ImportModelDlgProc(HWND hwnd, UINT Message, WPARAM wParam
 	LPCTSTR strMaterial[] = { L"BASICMATERIAL" };
 
 	UINT countMaterial[] = { 3 };
-	UINT iSelectedMaterial;
+//	UINT iSelectedMaterial;
 
 	switch (Message)
 	{
@@ -1186,7 +1203,7 @@ bool CD3DApp::InitDirect3D()
 	
 #if defined(DEBUG) || defined(_DEBUG)  
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-	//_CrtSetBreakAlloc(252905);
+	//_CrtSetBreakAlloc(2684040);
 	
 #endif	
 
@@ -1225,7 +1242,7 @@ bool CD3DApp::InitDirect3D()
 	// All Direct3D 11 capable devices support 4X MSAA for all render 
 	// target formats, so we only need to check quality support.
 	
-	HR(md3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 4, &m4xMsaaQuality));
+	HR(md3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM /*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/, 4, &m4xMsaaQuality));
 	assert(m4xMsaaQuality > 0);
 
 	// Fill out a DXGI_SWAP_CHAIN_DESC to describe our swap chain.s
@@ -1235,7 +1252,7 @@ bool CD3DApp::InitDirect3D()
 	sd.BufferDesc.Height = mClientHeight;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferDesc.Format = /*DXGI_FORMAT_R8G8B8A8_UNORM*/DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	sd.BufferDesc.Format = /*DXGI_FORMAT_R8G8B8A8_UNORM*/DXGI_FORMAT_R8G8B8A8_UNORM /*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 

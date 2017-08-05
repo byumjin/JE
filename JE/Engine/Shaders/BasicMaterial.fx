@@ -4,6 +4,11 @@ cbuffer cbPerFrame
 {
 	DirectionalLight gDirLight;
 	float4x4 gWorld;
+
+	float4x4 gWorldView;
+
+	float4x4 gInvView;
+
 	float4x4 gViewProj;
 	float4x4 gWorldViewProj;
 	float4x4 gWorldInvTranspose;
@@ -38,6 +43,8 @@ struct VertexOut
 	float2 TexCoord : TEXCOORD;
 	float4 VertexColor : COLOR;
 	float4 depthPosition : TEXTURE0;
+
+	//float4 NormPos : TEXTURE1;
 };
 
 Texture2D DiffuseMap;
@@ -66,8 +73,8 @@ VertexOut VS(VertexIn vin)
 	vout.TexCoord = vin.TexCoord;
 	vout.VertexColor = vin.Color;
 
-	vout.depthPosition = vout.PosH;
-
+	vout.depthPosition = float4(vin.LocalPosition, 1.0f);// vout.PosH;
+	//vout.NormPos = mul(float4(vin.LocalPosition, 1.0f), gWorldView);
 	return vout;
 }
 
@@ -117,7 +124,16 @@ POut PS(VertexOut pin)
 	//float Metallic = min( NormalMap.Sample(samAnisotropic, pin.TexCoord).a , 0.0f);
 
 	output.Normal = float4((WorldNormal + 1.0f)*0.5f, NormalMap.Sample(samAnisotropic, pin.TexCoord).a);
-	//output.Normal = float4((pin.NormalW + 1.0f)*0.5f, NormalMap.Sample(samAnisotropic, pin.TexCoord).a);
+	
+	/*
+	float3 d1 = ddx(pin.NormPos);
+	float3 d2 = ddy(pin.NormPos);
+	float3 normal = normalize(cross(d1, d2)); // this normal is dp/du X dp/dv
+	normal = normalize(mul(normal, (float3x3)gInvView));
+	
+	output.Normal = float4((normal + 1.0f)*0.5f, NormalMap.Sample(samAnisotropic, pin.TexCoord).a);
+	*/
+
 
 	// ** COLOR ** //
 	//rgb is for color
@@ -126,19 +142,20 @@ POut PS(VertexOut pin)
 	// ** SPECULAR ** //
 	//, a is for roughness
 	output.Specular = SpecularMap.Sample(samAnisotropic, pin.TexCoord);
-	
+	//output.Specular.a = pow(output.Specular.a, 1.5);// *output.Specular.a;
 	
 	//output.Specular.a = 0.5f;
 	//output.Specular.a = gTime*0.3f - (int)(gTime*0.3f);//  abs(sin(gTime));
 	//output.Specular.a = (sin(gTime) + 1.0f) * 0.5f;
 		// ** UV ** //
-	//[flatten]
+	/*
 	if(pin.TexCoord.x < 0.0f || pin.TexCoord.x > 1.0f || pin.TexCoord.y < 0.0f || pin.TexCoord.y > 1.0f)
 		output.UV = float4(pin.TexCoord, 1.0f, 1.0f);
 	else
 		output.UV = float4(pin.TexCoord, 0.0f, 1.0f);
+	*/
 
-	
+	output.UV = float4(pin.PosW, 1.0f);
 	
 	// ** Depth ** //
 	// r,g is for depth info
@@ -147,8 +164,8 @@ POut PS(VertexOut pin)
 	//output.Depth.z = bSelected;
 	//output.Depth.w = 0.0f;
 	
-	output.Depth = pin.depthPosition;
-	output.Depth.x = bSelected;
+	output.Depth = mul(pin.depthPosition, gWorldViewProj);  //pin.depthPosition;
+	//output.Depth.x = bSelected;
 	return output;
 }
 

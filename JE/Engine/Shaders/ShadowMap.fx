@@ -16,12 +16,9 @@ struct VertexIn
 struct VertexOut
 {
 	float4 PosH    : SV_POSITION;
-	//float3 depth : NORMAL;
 	float2 TexCoord : TEXCOORD;
 	float4 VertexColor : COLOR;
-	
-
-	float3 depth : POSITION;
+	float4 depth : TEXTURE0;
 };
 
 //Texture2D ShadowMap;
@@ -30,26 +27,24 @@ struct VertexOut
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-	//vout.PosH = mul(float4(vin.WorldPosition, 1.0f), gViewProj);
-	vout.PosH = mul(float4(vin.LocalPosition, 1.0f), gWorldViewProj);
-
 	
-	vout.TexCoord = vin.TexCoord;
-	vout.VertexColor = vin.Color;
+	vout.PosH = mul(float4(vin.LocalPosition, 1.0f), gWorldViewProj);	
+	vout.depth = float4(vin.LocalPosition, 1.0f);
 
-	//float4 dep = float4(vout.PosH.x / vout.PosH.w, vout.PosH.y / vout.PosH.w, vout.PosH.z / vout.PosH.w, 1.0f);	
-	//vout.depth = float3(dep.x, dep.y, dep.z);
-	vout.depth = float3(vout.PosH.x, vout.PosH.y, vout.PosH.z);
 	return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+float2 PS(VertexOut pin) : SV_Target
 {	
-	float dep;
-	dep = pin.depth.z;
-	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	return float4(dep, dep, dep, 1.0f);
-	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float dep;	
+	dep = mul(pin.depth, gWorldViewProj).z;
+	return dep;
+	/*
+	float dx = ddx(dep);
+	float dy = ddy(dep);
+
+	return float2(dep, pow(dep, 2.0f) + 0.25f*(dx*dx + dy*dy));
+	*/
 }
 
 
@@ -60,6 +55,5 @@ technique11 ShadowMapTech
 		SetVertexShader(CompileShader(vs_5_0, VS()));		
 		SetGeometryShader(NULL);
 		SetPixelShader(CompileShader(ps_5_0, PS()));
-
 	}	
 }

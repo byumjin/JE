@@ -73,6 +73,8 @@ protected:
 
 	void CalculateFrameStats();
 
+	void SetViewport(UINT Width, UINT Height);
+
 	HINSTANCE mhAppInst;
 	HWND      mhMainWnd;
 

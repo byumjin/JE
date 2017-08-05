@@ -32,11 +32,12 @@ void ShadowRender::Shutdown()
 }
 void ShadowRender::OnResize(int ScreenWidth, int ScreenHeight, int MapWidth, int MapHeight)
 {
+	/*
 	m_screenWidth = ScreenWidth / m_ScreenDivisonX;
 	m_screenHeight = ScreenHeight / m_ScreenDivisonY;
 	m_bitmapWidth = MapWidth / m_TextureDivisonX;
 	m_bitmapHeight = MapHeight / m_TextureDivisonY;
-
+	*/
 	//UpdateBuffers(deviceContext, positionX, positionY, InvViewProj);
 }
 
@@ -45,8 +46,9 @@ bool ShadowRender::Render(ID3D11DeviceContext* deviceContext, int positionX, int
 {
 	D3DX11_TECHNIQUE_DESC techDesc;
 
-	deviceContext->RSSetState(RenderStates::ShadowRS);
+	deviceContext->RSSetState(RenderStates::ShadowRS);	
 	deviceContext->IASetInputLayout(InputLayouts::BRDFL_VID);
+	
 
 	if (pDirectionalLightActorManager->mDLA_List.size() > 0)
 	{
@@ -54,33 +56,45 @@ bool ShadowRender::Render(ID3D11DeviceContext* deviceContext, int positionX, int
 		{
 			DirectionalLightActor* pDL = (*DLi);
 
-			SetBackBufferRenderTarget(pDL->m_Shadow_Texture->GetRenderTargetView(), NULL, NULL, NULL, TRUE, TRUE, TRUE, TRUE);
-
-			for (std::list<Object*>::iterator li = pObjectManager->mObj_List.begin(); li != pObjectManager->mObj_List.end(); li++)
+			if (pObjectManager->mObj_List.size() < 1)
 			{
-				// Incomplete
-				for (UINT j = 0; j < (*li)->GetLayerCount(); j++)
+
+			}
+			else
+			{
+				SetBackBufferRenderTarget(pDL->m_Shadow_Texture->GetRenderTargetView(), pDL->m_Shadow_Texture->GetDepthStencilView(), NULL, NULL, TRUE, TRUE, TRUE, TRUE);
+
+				for (std::list<Object*>::iterator li = pObjectManager->mObj_List.begin(); li != pObjectManager->mObj_List.end(); li++)
 				{
-					UpdateBasicMatrixforDL((*li)->GetWorldMatrix(), pDL);
-
-					pEffects->ShadowMapFx->mTech->GetDesc(&techDesc);
-					pEffects->ShadowMapFx->SetAllVariables(XMLoadFloat4x4(&mWVP), pDL->SunViewProj(), pDL->m_Shadow_Texture->GetShaderResourceView());
-
-					(*li)->Draw(deviceContext, pEffects->ShadowMapFx->mTech, techDesc);
-
-					////////// NULL Shader Texture
-					for (UINT p = 0; p < techDesc.Passes; ++p)
+					// Incomplete
+					for (UINT j = 0; j < (*li)->GetLayerCount(); j++)
 					{
-						pEffects->ShadowMapFx->SetNulltoTextures();
-						pEffects->ShadowMapFx->mTech->GetPassByIndex(p)->Apply(0, deviceContext);
-					}
+						UpdateBasicMatrixforDL((*li)->GetWorldMatrix(), pDL);
+						//UpdateBasicMatrix((*li)->GetWorldMatrix(), pCamera);
 
+						if (Check_IntersectAxisAlignedBoxFrustum((*li)) != 0)
+						{
+							pEffects->ShadowMapFx->mTech->GetDesc(&techDesc);
+							pEffects->ShadowMapFx->SetAllVariables(XMLoadFloat4x4(&mWVP), XMLoadFloat4x4(&mViewProj), pDL->m_Shadow_Texture->GetShaderResourceView());
+
+							(*li)->Draw(deviceContext, pEffects->ShadowMapFx->mTech, techDesc);
+
+							////////// NULL Shader Texture
+							for (UINT p = 0; p < techDesc.Passes; ++p)
+							{
+								pEffects->ShadowMapFx->SetNulltoTextures();
+								pEffects->ShadowMapFx->mTech->GetPassByIndex(p)->Apply(0, deviceContext);
+							}
+						}
+					}
 				}
 			}
+
+			
 		}
 	}
 
-	SetBackBufferRenderTarget(FALSE, FALSE, TRUE, TRUE);
+	//SetBackBufferRenderTarget(FALSE, FALSE, TRUE, TRUE);
 
 	return true;
 }

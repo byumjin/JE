@@ -2,6 +2,7 @@
 #define COMMON_FX
 
 #define PI 3.14159265359
+#define DegreeToRadian 0.01745329252
 
 struct DirectionalLight
 {
@@ -54,7 +55,7 @@ SamplerState ShadowTextureSampler
 	AddressU = BORDER;
 	AddressV = BORDER;
 	AddressW = BORDER;
-	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 };
 
@@ -84,6 +85,15 @@ SamplerState ObjTextureSampler
 {
 	Filter = MIN_MAG_MIP_LINEAR;
 	//Filter = MIN_MAG_MIP_POINT;
+	AddressU = WRAP;
+	AddressV = WRAP;
+	AddressW = WRAP;
+	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+};
+
+SamplerState RandomNoiseTextureSampler
+{
+	Filter = MIN_MAG_MIP_POINT;	
 	AddressU = WRAP;
 	AddressV = WRAP;
 	AddressW = WRAP;
@@ -134,7 +144,9 @@ float2 ViewToScreen(float2 ViewPos)
 float4 GetDepth(Texture2D DepthTexture, float2 TexCoord, float4x4 InvViewProj)
 {
 	//return mul(   float4(ScreenToView(TexCoord), DepthTexture.Sample(TextureSampler, TexCoord).z / DepthTexture.Sample(TextureSampler, TexCoord).w, 1.0f)   *DepthTexture.Sample(TextureSampler, TexCoord).w, InvViewProj);
-	return mul(   float4(ScreenToView(TexCoord), DepthTexture.Sample(TextureSampler, TexCoord).z, DepthTexture.Sample(TextureSampler, TexCoord).w), InvViewProj);
+	
+	float4 result = mul(float4(ScreenToView(TexCoord), DepthTexture.Sample(TextureSampler, TexCoord).z / DepthTexture.Sample(TextureSampler, TexCoord).w, 1.0f), InvViewProj);
+	return result / result.w;
 
 }
 

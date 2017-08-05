@@ -23,7 +23,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	D3D11_RASTERIZER_DESC NormalDesc;
 	ZeroMemory(&NormalDesc, sizeof(D3D11_RASTERIZER_DESC));
 	NormalDesc.FillMode = D3D11_FILL_SOLID;
-	NormalDesc.CullMode = D3D11_CULL_BACK;
+	NormalDesc.CullMode = D3D11_CULL_NONE;
 	NormalDesc.FrontCounterClockwise = false;
 	NormalDesc.DepthClipEnable = true;
 
@@ -36,10 +36,10 @@ void RenderStates::InitAll(ID3D11Device* device)
 	D3D11_RASTERIZER_DESC ShadowDesc;
 	ZeroMemory(&ShadowDesc, sizeof(D3D11_RASTERIZER_DESC));
 	ShadowDesc.FillMode = D3D11_FILL_SOLID;
-	ShadowDesc.CullMode = D3D11_CULL_BACK;
-	ShadowDesc.DepthBias = 100000;
-	ShadowDesc.DepthBiasClamp = 10.0f;
-	ShadowDesc.SlopeScaledDepthBias = 1.0;
+	ShadowDesc.CullMode = D3D11_CULL_NONE;
+	ShadowDesc.DepthBias = 5;
+	ShadowDesc.DepthBiasClamp = 100.0f;
+	ShadowDesc.SlopeScaledDepthBias = 10.0;
 	ShadowDesc.FrontCounterClockwise = false;
 	ShadowDesc.DepthClipEnable = true;
 

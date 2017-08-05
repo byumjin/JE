@@ -1,72 +1,20 @@
-﻿  Asset.cpp
-  AssetDatabase.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Actor.cpp
-d:\je\je\engine\actor\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Camera.cpp
-d:\je\je\engine\actor\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  DirectionalLightActor.cpp
-d:\je\je\engine\actor\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  LightActor.cpp
-d:\je\je\engine\actor\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  ReflectionActor.cpp
-d:\je\je\engine\actor\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  D3DUtil.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  d3dxGlobal.cpp
-  EffectAPI.cpp
-  EffectLoad.cpp
-  EffectNonRuntime.cpp
-  EffectReflection.cpp
-  EffectRuntime.cpp
-  Effects.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  GameTimer.cpp
-  Geometry.cpp
-d:\je\je\engine\common\Geometry.h(3): fatal error C1083: Cannot open include file: 'fbxsdk.h': No such file or directory
-  GeometryGenerator.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  ImageLoader.cpp
-  LightHelper.cpp
-  Compiling...
-  MathHelper.cpp
-  tiny_obj_loader.cc
-Engine\Common\tiny_obj_loader.cc(462): warning C4473: 'sscanf_s' : not enough arguments passed for format string
-  Engine\Common\tiny_obj_loader.cc(462): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
-  Engine\Common\tiny_obj_loader.cc(462): note: the missing variadic argument 2 is required by format string '%s'
-  Engine\Common\tiny_obj_loader.cc(462): note: this argument is used as a buffer size
-Engine\Common\tiny_obj_loader.cc(754): warning C4473: 'sscanf_s' : not enough arguments passed for format string
-  Engine\Common\tiny_obj_loader.cc(754): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
-  Engine\Common\tiny_obj_loader.cc(754): note: the missing variadic argument 2 is required by format string '%s'
-  Engine\Common\tiny_obj_loader.cc(754): note: this argument is used as a buffer size
-Engine\Common\tiny_obj_loader.cc(782): warning C4473: 'sscanf_s' : not enough arguments passed for format string
-  Engine\Common\tiny_obj_loader.cc(782): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
-  Engine\Common\tiny_obj_loader.cc(782): note: the missing variadic argument 2 is required by format string '%s'
-  Engine\Common\tiny_obj_loader.cc(782): note: this argument is used as a buffer size
-Engine\Common\tiny_obj_loader.cc(849): warning C4473: 'sscanf_s' : not enough arguments passed for format string
-  Engine\Common\tiny_obj_loader.cc(849): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
-  Engine\Common\tiny_obj_loader.cc(849): note: the missing variadic argument 2 is required by format string '%s'
-  Engine\Common\tiny_obj_loader.cc(849): note: this argument is used as a buffer size
-  D3DApp.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  CFbx.cpp
-  Object.cpp
-d:\je\je\engine\object\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Bloom.cpp
-d:\je\je\engine\renderer\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  DebugWindow.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Gizmo.cpp
-d:\je\je\engine\renderer\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Render.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  RenderStates.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  ShaderStructure.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  RenderTexture.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  Texture.cpp
-d:\je\je\engine\common\../../stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
-  WinMain.cpp
-d:\je\je\stdafx.h(33): fatal error C1083: Cannot open include file: 'DirectXTex.h': No such file or directory
+﻿  DebugWindows.cpp
+  Generating code
+  2 of 7309 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+DirectXTex.lib(BC.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(BC.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(BC4BC5.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(BC4BC5.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(BC6HBC7.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(BC6HBC7.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexCompress.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexCompress.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexConvert.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexConvert.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexD3D11.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexD3D11.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexDDS.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexDDS.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexImage.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexImage.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexMipMaps.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexMipMaps.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexTGA.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexTGA.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexUtil.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexUtil.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+DirectXTex.lib(DirectXTexWIC.obj) : warning LNK4099: PDB 'DirectXTex.pdb' was not found with 'DirectXTex.lib(DirectXTexWIC.obj)' or at 'D:\JE\Release\DirectXTex.pdb'; linking object as if no debug info
+  JE.vcxproj -> D:\JE\Release\JE.exe
+  JE.vcxproj -> D:\JE\Release\JE.pdb (Full PDB)

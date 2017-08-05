@@ -62,7 +62,7 @@ float4 GaussianVertical(VertexOut pin) : SV_Target
 	gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(factor05, 0.0f), level)*0.0215963866053;
 	gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(factor06, 0.0f), level)*0.00895781211794;
 	gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(factor07, 0.0f), level)*0.0044299121055113265;
-	return gl_FragColor*5.0f;
+	return gl_FragColor;
 }
 
 float4 GaussianHeight(VertexOut pin) : SV_Target
@@ -85,7 +85,7 @@ float4 GaussianHeight(VertexOut pin) : SV_Target
 		gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(0.0f, factor05), level)*0.0215963866053;
 		gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(0.0f, factor06), level)*0.00895781211794;
 		gl_FragColor += SceneMap.SampleLevel(TextureMipSampler, pin.TexCoord + float2(0.0f, factor07), level)*0.0044299121055113265;
-		return gl_FragColor*5.0f;
+		return gl_FragColor;
 
 		//return float4(pin.TexCoord, 0.0f, 0.0f);
 	}
@@ -96,21 +96,10 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 ori = BasicColorMap.Sample(TextureSampler, pin.TexCoord);
 
 
-	//[flatten]
-	if (rgba.r > 1.0f || rgba.g > 1.0f || rgba.b > 1.0f)
-	{
-		
-		rgba = max((rgba - 1.0f), 0.0f)*0.2f;
-		
-		
-		
-
-		//rgba = rgba * 0.01f;
-
-		return float4(rgba.xyz, 1.0f) * ori;
-	}
 	
-	return float4(0.0f, 0.0f, 0.0f, 0.0f);
+		rgba = max((rgba - 1.0f), 0.0f)*0.5f;
+		return float4(rgba.xyz, 1.0f) * ori;	
+	
 }
 
 technique11 BloomTech

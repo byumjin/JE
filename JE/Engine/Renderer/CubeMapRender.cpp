@@ -47,69 +47,82 @@ bool CubeMapRender::Render(ID3D11DeviceContext* deviceContext, int positionX, in
 
 	deviceContext->RSSetState(RenderStates::NormalRS);
 	deviceContext->IASetInputLayout(InputLayouts::VertexInputDesc);
-
-	SetBackBufferRenderTarget(pRenderTextureManger->mRT_List.at(REFLECTION)->GetRenderTargetView(), *ppDepthStencilView, NULL, NULL, FALSE, TRUE, TRUE, FALSE);
-
-
-	for (std::list<Object*>::iterator li = pObjectManager->mObj_List.begin(); li != pObjectManager->mObj_List.end(); li++)
+	
+	if (pObjectManager->mObj_List.size() < 1)
 	{
-		// Incomplete
-		for (UINT j = 0; j < (*li)->GetLayerCount(); j++)
+
+	}
+	else
+	{
+		SetBackBufferRenderTarget(pRenderTextureManger->mRT_List.at(REFLECTION)->GetRenderTargetView(), *ppDepthStencilView, NULL, NULL, FALSE, TRUE, TRUE, FALSE);
+
+
+		for (std::list<Object*>::iterator li = pObjectManager->mObj_List.begin(); li != pObjectManager->mObj_List.end(); li++)
 		{
-			UpdateBasicMatrix((*li)->GetWorldMatrix(), pCamera);
-
-			// 0: not intersect 1: intersect 2: include
-			if (Check_IntersectAxisAlignedBoxFrustum((*li)) != 0)
+			// Incomplete
+			for (UINT j = 0; j < (*li)->GetLayerCount(); j++)
 			{
-				ReflectionActorEffect* pEffect = pEffects->ReflectionActorFx;
+				UpdateBasicMatrix((*li)->GetWorldMatrix(), pCamera);
 
-				if (pEffect)
+				// 0: not intersect 1: intersect 2: include
+				if (Check_IntersectAxisAlignedBoxFrustum((*li)) != 0)
 				{
-					ReflectionActor* RAarray[6];
+					ReflectionActorEffect* pEffect = pEffects->ReflectionActorFx;
 
-					std::list<ReflectionActor*>::iterator Rai = pReflectionActorManager->m_RA_List.begin();
-
-					UINT EnvCubeCount = 0;
-
-					for (UINT g = 0; g < pReflectionActorManager->m_RA_List.size(); g++, Rai++)
+					if (pEffect)
 					{
-						if (MathHelper::Distance((*Rai)->GetWorldPosition(), (*li)->GetOriginPointPos()) <= (*Rai)->GetRadius())
+						ReflectionActor* RAarray[6];
+
+						std::list<ReflectionActor*>::iterator Rai = pReflectionActorManager->m_RA_List.begin();
+
+						UINT EnvCubeCount = 0;
+
+						for (UINT g = 0; g < pReflectionActorManager->m_RA_List.size(); g++, Rai++)
 						{
-							RAarray[EnvCubeCount] = *Rai;
-							EnvCubeCount++;
+							if (MathHelper::Distance((*Rai)->GetWorldPosition(), (*li)->GetOriginPointPos()) <= (*Rai)->GetRadius())
+							{
+								RAarray[EnvCubeCount] = *Rai;
+								EnvCubeCount++;
+							}
 						}
+
+						if (EnvCubeCount >= 1)
+						{
+							for (UINT g = 0; g < EnvCubeCount; g++)
+								pEffect->SetAllEnvTextures(RAarray[g]->GetCubeMapSRV(), g);
+						}
+
+						// Set per frame constants.		
+						pEffect->SetCubeVariables(XMLoadFloat4x4(&(*li)->GetWorldMatrix()), XMLoadFloat4x4(&mWVP), pCamera->InvViewProj(),
+							(*li)->pMI->m_NormalMap->GetShaderResourceView(),
+							(*li)->pMI->m_SpecularMap->GetShaderResourceView(),
+							*pEyePosW,
+							(float)EnvCubeCount,
+							(*li)->GetOriginPointPos());
+
+						pEffect->CompositionCubeMapTech->GetDesc(&techDesc);
 					}
 
-					if (EnvCubeCount >= 1)
+					(*li)->Draw(deviceContext, pEffect->CompositionCubeMapTech, techDesc);
+
+					////////// NULL Shader Texture
+					for (UINT p = 0; p < techDesc.Passes; ++p)
 					{
-						for (UINT g = 0; g < EnvCubeCount; g++)
-							pEffect->SetAllEnvTextures(RAarray[g]->GetCubeMapSRV(), g);
+						pEffects->ReflectionActorFx->SetNulltoTextures();
+						pEffect->CompositionCubeMapTech->GetPassByIndex(p)->Apply(0, deviceContext);
 					}
-
-					// Set per frame constants.		
-					pEffect->SetCubeVariables(XMLoadFloat4x4(&(*li)->GetWorldMatrix()), XMLoadFloat4x4(&mWVP), pCamera->InvViewProj(),
-						(*li)->pMI->m_NormalMap->GetShaderResourceView(),
-						(*li)->pMI->m_SpecularMap->GetShaderResourceView(),
-						*pEyePosW,
-						(float)EnvCubeCount,
-						(*li)->GetOriginPointPos());
-
-					pEffect->CompositionCubeMapTech->GetDesc(&techDesc);
-				}
-
-				(*li)->Draw(deviceContext, pEffect->CompositionCubeMapTech, techDesc);
-
-				////////// NULL Shader Texture
-				for (UINT p = 0; p < techDesc.Passes; ++p)
-				{
-					pEffects->ReflectionActorFx->SetNulltoTextures();
-					pEffect->CompositionCubeMapTech->GetPassByIndex(p)->Apply(0, deviceContext);
 				}
 			}
 		}
+
+		deviceContext->GenerateMips(pRenderTextureManger->mRT_List.at(REFLECTION)->GetShaderResourceView());
 	}
 
-	deviceContext->GenerateMips(pRenderTextureManger->mRT_List.at(REFLECTION)->GetShaderResourceView());
+
+	
+
+	//ID3D11ShaderResourceView *const pSRV[1] = { NULL };
+	//deviceContext->PSSetShaderResources(0, 1, pSRV);
 
 	return true;
 }

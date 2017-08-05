@@ -31,7 +31,8 @@ Texture2D BasicTexture;
 Texture2D SpecularTexture;
 Texture2D NormalTexture;
 Texture2D DepthTexture;
-Texture2D SelectedTexture;
+Texture2D AOTexture;
+Texture2D LensFlareTexture;
 Texture2D UVTexture;
 Texture2D EnvTexture;
 Texture2D BloomTexture;
@@ -79,8 +80,11 @@ float4 Metallic(VertexOut pin) : SV_Target
 float4 WorldPosition(VertexOut pin) : SV_Target
 {
 	float4 DepthInfo = DepthTexture.Sample(TextureSampler, pin.TexCoord);
-	float4 PixelWorldPos = mul(float4(ScreenToView(pin.TexCoord), DepthInfo.z / DepthInfo.w, 1.0f)*DepthInfo.w, gInvDepthViewProj);
-	//PixelWorldPos = PixelWorldPos / PixelWorldPos.w;
+	//float4 PixelWorldPos = mul(float4(ScreenToView(pin.TexCoord), DepthInfo.z / DepthInfo.w, 1.0f)*DepthInfo.w, gInvDepthViewProj);
+
+	float4 PixelWorldPos = mul(float4(ScreenToView(pin.TexCoord), DepthInfo.z / DepthInfo.w, 1.0f), gInvDepthViewProj);
+
+	PixelWorldPos = PixelWorldPos / PixelWorldPos.w;
 	return PixelWorldPos;
 	
 	//return GetDepth(DepthTexture, pin.TexCoord, gInvViewProj);
@@ -98,6 +102,7 @@ float4 Depth(VertexOut pin) : SV_Target
 	return float4(z, z, z, 1.0f);
 }
 
+/*
 float4 Selected(VertexOut pin) : SV_Target
 {
 	return  SelectedTexture.Sample(TextureSampler, pin.TexCoord);	
@@ -106,6 +111,7 @@ float4 Selected(VertexOut pin) : SV_Target
 
 	//return float4(Opacity, Opacity, Opacity, 1.0f);
 }
+*/
 
 float4 Opacity(VertexOut pin) : SV_Target
 {
@@ -132,9 +138,23 @@ float4 Bloom(VertexOut pin) : SV_Target
 }
 
 
-float Shadow(VertexOut pin) : SV_Target
+float4 Shadow(VertexOut pin) : SV_Target
 {
 	return  ShadowTexture.Sample(TextureSampler, pin.TexCoord);
+}
+
+float4 AO(VertexOut pin) : SV_Target
+{
+	return  AOTexture.Sample(TextureSampler, pin.TexCoord);
+}
+
+float4 LensFlare(VertexOut pin) : SV_Target
+{
+	return  LensFlareTexture.Sample(TextureSampler, pin.TexCoord);
+
+//float Opacity = BasicTexture.Sample(TextureSampler, pin.TexCoord).a;
+
+//return float4(Opacity, Opacity, Opacity, 1.0f);
 }
 
 
@@ -225,7 +245,17 @@ technique11 OpacityTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, VS()));
 		SetGeometryShader(NULL);
-		SetPixelShader(CompileShader(ps_5_0, Opacity()));
+		SetPixelShader(CompileShader(ps_5_0, Shadow()));
+	}
+}
+
+technique11 LensFlareTech
+{
+	pass P0
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS()));
+		SetGeometryShader(NULL);
+		SetPixelShader(CompileShader(ps_5_0, LensFlare()));
 	}
 }
 
@@ -235,9 +265,10 @@ technique11 AOTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, VS()));
 		SetGeometryShader(NULL);
-		SetPixelShader(CompileShader(ps_5_0, Shadow()));
+		SetPixelShader(CompileShader(ps_5_0, AO()));
 	}
 }
+
 technique11 EnvTech
 {
 	pass P0
